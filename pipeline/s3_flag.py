@@ -43,7 +43,7 @@ def llm_undeclared(c, coi, author, initials, companies):
     key = hashlib.sha1(json.dumps([coi, author, initials, sorted(companies), c["llm"]["model"], "v2"]).encode()).hexdigest()
     path = CACHE / "llm" / f"{key}.json"
     if path.exists():
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding="utf-8"))
     token = env_token(c["llm"]["token_env"])
     fams = {co: family(co) for co in companies}
     prompt = (f"Conflict-of-interest statement from a medical paper:\n\"\"\"{coi}\"\"\"\n\n"
@@ -64,7 +64,7 @@ def llm_undeclared(c, coi, author, initials, companies):
     ans = json.loads(r.json()["choices"][0]["message"]["content"])
     ans["undeclared"] = [x for x in ans.get("undeclared", []) if x in companies]
     path.parent.mkdir(exist_ok=True)
-    path.write_text(json.dumps(ans))
+    path.write_text(json.dumps(ans), encoding="utf-8")
     return ans
 
 
@@ -142,7 +142,7 @@ def main():
 
     write_jsonl(RESULTS / "authors.jsonl", rows)
     red = [r for r in rows if r["channel"] == "red"]
-    with open(RESULTS / "red_flags.csv", "w", newline="") as f:
+    with open(RESULTS / "red_flags.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["date", "journal", "doi", "title", "author", "specialty", "city", "state", "undeclared_companies",
                     "undeclared_total_usd", "reason", "statement"])

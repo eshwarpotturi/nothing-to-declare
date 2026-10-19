@@ -105,7 +105,7 @@ def main():
         return "red" if "red" in ch else "amber" if "amber" in ch else "green" if "green" in ch else "grey"
     plist = [{"s": pst(v["chs"]), "f": v["f"], "y": v["y"], "n": v["authors"], "d": v["paid_declared"], "c": v["cases"]}
              for _, v in sorted(papers.items(), key=lambda kv: hashlib.md5(kv[0].encode()).hexdigest())]
-    (PUBLIC / "papers.json").write_text(json.dumps(plist, separators=(",", ":")))
+    (PUBLIC / "papers.json").write_text(json.dumps(plist, separators=(",", ":")), encoding="utf-8")
     # declared vs undeclared, by company group
     comp = defaultdict(Counter)
     for r in rows:
@@ -127,13 +127,13 @@ def main():
                                "said_none": sum(1 for r in red if r["reason"] == "statement declares no conflicts"),
                                "relevant_only": sum(1 for r in rows if r["channel"] == "amber")}
     summary["by_year_mix"] = {y: {k2: v[k2] for k2 in ("green", "amber", "red")} for y, v in sorted(yr.items())}
-    (PUBLIC / "cases.json").write_text(json.dumps(cases, separators=(",", ":")))
-    (PUBLIC / "summary.json").write_text(json.dumps(summary, indent=1))
+    (PUBLIC / "cases.json").write_text(json.dumps(cases, separators=(",", ":")), encoding="utf-8")
+    (PUBLIC / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     log(f"public: {len(cases)} anonymised red cases, summary {dict(counts)}")
 
     random.seed(7)
     sample = random.sample(red, min(20, len(red)))
-    with open(RESULTS / "verify_sample.csv", "w", newline="") as f:
+    with open(RESULTS / "verify_sample.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["doi", "author", "aff", "payee_city", "payee_specialty", "undeclared", "statement", "match_ok(y/n)", "flag_ok(y/n)"])
         for r in sample:

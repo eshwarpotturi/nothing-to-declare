@@ -15,9 +15,9 @@ OUT = PRIVATE / "full" / "nothing-to-declare-full.html"
 def main():
     rows = read_jsonl(RESULTS / "authors.jsonl")
     meta = {p["pmcid"]: p for p in read_jsonl(DATA / "papers.jsonl")}
-    pub_cases = json.loads((ROOT / "docs" / "data" / "cases.json").read_text())
-    summary = json.loads((ROOT / "docs" / "data" / "summary.json").read_text())
-    pub_papers = json.loads((ROOT / "docs" / "data" / "papers.json").read_text())
+    pub_cases = json.loads((ROOT / "docs" / "data" / "cases.json").read_text(encoding="utf-8"))
+    summary = json.loads((ROOT / "docs" / "data" / "summary.json").read_text(encoding="utf-8"))
+    pub_papers = json.loads((ROOT / "docs" / "data" / "papers.json").read_text(encoding="utf-8"))
 
     # rebuild case ids exactly as step 4 does, then attach real details
     flagged = sorted([r for r in rows if r["channel"] in ("red", "amber")], key=lambda r: (r["date"], r["pmcid"]))
@@ -57,11 +57,11 @@ def main():
             auth.append({"name": a["name"], "st": st, "case": cid_of.get((pm, a["name"])), "orcid": a.get("orcid", "")})
         papers.append({**pub, "t": m["title"], "j": m["journal"], "doi": m["doi"], "a": auth})
 
-    tpl = (ROOT / "docs" / "index.html").read_text()
+    tpl = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
     data = json.dumps({"S": summary, "C": cases, "P": papers}, separators=(",", ":")).replace("</", "<\\/")
     html = patch(tpl, data)
     OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(html)
+    OUT.write_text(html, encoding="utf-8")
     log(f"internal full version: {OUT} ({len(html) / 1e6:.1f} MB, {len(cases)} cases, {len(papers)} papers)")
 
 
