@@ -1,132 +1,141 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=1280">
 <title>Nothing to Declare</title>
 <meta name="description" content="One in three medical papers with US authors has an author who did not declare drug or device company money. A check of 2,878 papers against public payment records.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a single-column data story. Finding headline + paper grid above the fold, then one chart per claim, actions, and an explorer at the end */
+/* Layout: a desktop data story. Finding + clickable paper grid first, one visual per claim, every mark opens its evidence in a pop-up */
 :root{
-  --bg:#f7f6f2; --paper:#ffffff; --ink:#1b2430; --ink2:#4a5563; --muted:#7a8592; --rule:#e2e0d8;
-  --good:#1f9d55; --good-bg:#e4f4ea; --warn:#c98a00; --warn-bg:#fbf0d6; --bad:#d1382c; --bad-bg:#fbe5e2; --none:#a8b0b9; --none-bg:#eef0f2;
-  --xray:#18222d; --xray-ink:#d9e6f5; --xray-dim:#8fa3b8; --gold:#f2c14e; --form:#fbf8ef; --form-line:#d8ceb2;
+  --bg:#f7f6f2; --paper:#ffffff; --ink:#1b2430; --ink2:#4a5563; --muted:#7a8592; --rule:#e2e0d8; --hover:#f0eee7;
+  --good:#1f9d55; --good-bg:#e4f4ea; --warn:#d49a00; --warn-bg:#fbf0d6; --bad:#d1382c; --bad2:#ec8a80; --bad-bg:#fbe5e2; --none:#b4bbc3; --none-bg:#eef0f2;
+  --xray:#18222d; --xray-ink:#d9e6f5; --xray-dim:#8fa3b8; --gold:#f2c14e; --form:#fbf8ef; --form-line:#d8ceb2; --shade:rgba(20,28,38,.45);
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
   --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12171d; --paper:#1a2129; --ink:#e8edf2; --ink2:#b4bfcb; --muted:#8b97a4; --rule:#2c3540;
-  --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad-bg:#3a1714; --none:#66717d; --none-bg:#232b34;
-  --xray:#0b1015; --form:#20242a; --form-line:#4a4436; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#12171d; --paper:#1a2129; --ink:#e8edf2; --ink2:#b4bfcb; --muted:#8b97a4; --rule:#2c3540;
-  --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad-bg:#3a1714; --none:#66717d; --none-bg:#232b34;
-  --xray:#0b1015; --form:#20242a; --form-line:#4a4436; color-scheme:dark}
+  --bg:#12171d; --paper:#1a2129; --ink:#e8edf2; --ink2:#b4bfcb; --muted:#8b97a4; --rule:#2c3540; --hover:#222b35;
+  --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad2:#a84a42; --bad-bg:#3a1714; --none:#56616d; --none-bg:#232b34;
+  --xray:#0b1015; --form:#20242a; --form-line:#4a4436; --shade:rgba(0,0,0,.6); color-scheme:dark}
 *{box-sizing:border-box}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.55}
-.col{max-width:1040px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
-section{padding-block:44px;border-top:1px solid var(--rule)}
-.kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1.55;min-width:1180px}
+.col{width:1140px;margin:0 auto}
+section{padding-block:56px;border-top:1px solid var(--rule)}
+.kicker{font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 h1,h2{font-family:var(--serif);font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:0}
-h1{font-size:clamp(34px,5.6vw,60px);line-height:1.05;max-width:20ch}
-h2{font-size:clamp(26px,3.6vw,38px);line-height:1.12;max-width:26ch}
+h1{font-size:60px;line-height:1.04}
+h2{font-size:38px;line-height:1.12;max-width:28ch}
 p{margin:0}
-.lede{font-size:clamp(18px,2vw,21px);color:var(--ink2);max-width:62ch;margin-top:14px}
-.body{color:var(--ink2);max-width:64ch;margin-top:10px}
+.lede{font-size:21px;color:var(--ink2);max-width:66ch;margin-top:16px}
+.body{color:var(--ink2);max-width:70ch;margin-top:10px}
 .red{color:var(--bad)}.grn{color:var(--good)}.amb{color:var(--warn)}
 b.num{font-family:var(--mono);font-weight:500}
+.hint{font-size:14.5px;color:var(--muted);margin-top:10px}
+.hint::before{content:"↗ ";}
+button{font:inherit;color:inherit}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
+.toggle{border:1px solid var(--rule);background:var(--paper);border-radius:99px;padding:5px 14px;font-size:14.5px;cursor:pointer;color:var(--ink2)}
+.toggle:focus-visible,.clk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 /* hero */
-.hero{padding-block:36px 40px;border-top:0}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;margin-top:26px;align-items:start}
-@media (max-width:860px){.hero-grid{grid-template-columns:1fr}}
-.papers{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:16px;min-width:0}
-.papers canvas{width:100%;display:block}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:15px;color:var(--ink2)}
+.hero{padding-block:22px 48px;border-top:0}
+.hero-grid{display:grid;grid-template-columns:1fr 330px;gap:28px;margin-top:28px;align-items:start}
+.papers{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px}
+.papers canvas{width:100%;display:block;cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:15.5px;color:var(--ink2)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.legend i{width:12px;height:12px;border-radius:2px;display:inline-block}
 .stats{display:grid;gap:12px}
-.stat{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
-.stat b{display:block;font-family:var(--serif);font-weight:800;font-size:38px;line-height:1.05}
-.stat span{font-size:15.5px;color:var(--ink2)}
+.stat{all:unset;box-sizing:border-box;display:block;background:var(--paper);border:1px solid var(--rule);border-left:5px solid var(--c,var(--ink));border-radius:10px;padding:14px 16px;cursor:pointer}
+.stat:hover{background:var(--hover)}
+.stat:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.stat b{display:block;font-family:var(--serif);font-weight:800;font-size:40px;line-height:1.05;color:var(--c,var(--ink))}
+.stat span{font-size:16px;color:var(--ink2)}
 /* case */
-.case{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;margin-top:24px;align-items:stretch}
-@media (max-width:760px){.case{grid-template-columns:1fr}.vs{display:none}}
-.form{background:var(--form);border:1px solid var(--form-line);border-radius:6px;padding:18px;font-family:var(--mono);font-size:14px;display:grid;gap:10px;align-content:start}
-.ft{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:8px}
-.form .stamp{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--good);border:3px solid var(--good);border-radius:6px;padding:4px 10px;justify-self:start;transform:rotate(-3deg);margin-top:6px}
-.vs{align-self:center;font-family:var(--serif);font-size:22px;color:var(--muted)}
-.xray{background:var(--xray);color:var(--xray-ink);border-radius:6px;padding:18px;font-family:var(--mono);font-size:14px;display:grid;gap:10px;align-content:start}
+.case{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin-top:24px;align-items:stretch}
+.case.tight{grid-template-columns:1fr 1fr;margin-top:0}
+.form{background:var(--form);border:1px solid var(--form-line);border-radius:8px;padding:20px;font-family:var(--mono);font-size:15px;display:grid;gap:10px;align-content:start}
+.ft{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:8px}
+.stamp{font-family:var(--serif);font-size:26px;font-weight:800;color:var(--good);border:3px solid var(--good);border-radius:6px;padding:4px 12px;justify-self:start;transform:rotate(-3deg);margin-top:6px}
+.vs{align-self:center;font-family:var(--serif);font-size:24px;color:var(--muted)}
+.xray{background:var(--xray);color:var(--xray-ink);border-radius:8px;padding:20px;font-family:var(--mono);font-size:15px;display:grid;gap:10px;align-content:start}
 .xray .ft{color:var(--xray-dim);border-bottom-color:#33414f}
-.pay{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;border:1px solid var(--bad);box-shadow:inset 3px 0 0 var(--bad);border-radius:4px;padding:8px 10px}
+.pay{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;border:1px solid #ff8a80;box-shadow:inset 3px 0 0 #ff8a80;border-radius:4px;padding:8px 10px}
 .pay b{color:#fff;font-weight:500;overflow-wrap:anywhere}.pay em{font-style:normal;color:var(--gold)}
-.pay small{grid-column:1/-1;color:var(--xray-dim);font-size:12px}
-.verdict{margin-top:14px;background:var(--bad-bg);border-left:4px solid var(--bad);border-radius:4px;padding:12px 16px;font-size:16.5px}
+.pay small{grid-column:1/-1;color:var(--xray-dim);font-size:12.5px}
+.pay.total{border-color:#33414f;box-shadow:none}
+.verdict{margin-top:14px;border-radius:6px;padding:14px 18px;font-size:17.5px;background:var(--bad-bg);border-left:5px solid var(--bad)}
+.verdict.g{background:var(--good-bg);border-left-color:var(--good)}
 /* charts */
-.chart{margin-top:22px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:18px 18px 12px;min-width:0}
+.chart{margin-top:24px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:22px 24px 16px}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
-.chart svg text{font-family:var(--sans);fill:var(--ink2);font-size:14px}
+.chart svg text{font-family:var(--sans);fill:var(--ink2);font-size:15px}
 .chart svg .lab{fill:var(--ink);font-weight:600}
-.chart svg .val{font-family:var(--mono);font-size:13px;fill:var(--ink2)}
-.chart svg .note{fill:var(--ink);font-size:14.5px;font-weight:600}
+.chart svg .val{font-family:var(--mono);font-size:13.5px;fill:var(--ink2)}
+.chart svg .on{fill:#fff;font-family:var(--mono);font-size:13.5px;font-weight:500}
+.chart svg .note{fill:var(--ink);font-size:16px;font-weight:600}
 .chart svg .axis{stroke:var(--rule)}
-.chart .cap{font-size:14px;color:var(--muted);margin-top:8px}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-@media (max-width:860px){.split{grid-template-columns:1fr}}
-.split h2{font-size:clamp(24px,3vw,30px)}
-.split>div{min-width:0}
+.chart svg .clk{cursor:pointer}
+.chart svg .clk:hover rect,.chart svg circle.clk:hover{filter:brightness(1.12)}
+.chart svg .row:hover .hov{fill:var(--hover)}
+.cap{font-size:15px;color:var(--muted);margin-top:10px}
+/* split bar */
+.splitbar{display:flex;height:64px;border-radius:8px;overflow:hidden;margin-top:24px;gap:2px}
+.splitbar button{all:unset;cursor:pointer;display:flex;flex-direction:column;justify-content:center;padding:0 14px;color:#fff;font-size:15px;line-height:1.25;min-width:0;white-space:nowrap;overflow:hidden}
+.splitbar button b{font-family:var(--mono);font-size:19px;font-weight:500}
+.splitbar button:hover{filter:brightness(1.1)}
+.splitbar button:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 /* actions */
-.acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
-@media (max-width:860px){.acts{grid-template-columns:1fr}}
-.act{background:var(--paper);border:1px solid var(--rule);border-top:4px solid var(--good);border-radius:8px;padding:16px 18px}
-.act b{font-family:var(--serif);font-size:21px;display:block;margin-bottom:4px}
-.act p{color:var(--ink2);font-size:16px}
-/* explorer */
-.explorer{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;margin-top:22px;align-items:start}
-@media (max-width:860px){.explorer{grid-template-columns:1fr}}
-.queue{background:var(--paper);border:1px solid var(--rule);border-radius:8px;overflow:hidden;min-width:0}
-.controls{display:flex;flex-wrap:wrap;gap:8px 12px;padding:12px 14px;border-bottom:1px solid var(--rule);font-size:14.5px;color:var(--ink2);align-items:center}
-.controls label{display:inline-flex;gap:6px;align-items:center}
-select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:4px;padding:3px 6px}
-.count{font-family:var(--mono);font-size:12.5px;color:var(--muted);width:100%}
-ul.list{list-style:none;margin:0;padding:0;max-height:460px;overflow-y:auto}
-.list button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:15.5px}
-.list button:hover,.list button[aria-current="true"]{background:var(--none-bg)}
-.list button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
-.list i{align-self:stretch;background:var(--bad);border-radius:3px}
-.list small{display:block;color:var(--muted);font-size:13px}
-.list .amt{font-family:var(--mono);font-size:13.5px}
-.list .more{all:unset;display:block;text-align:center;padding:10px;font-weight:600;cursor:pointer;font-size:14.5px}
-.desk{display:grid;gap:12px;min-width:0}
-.desk .case{margin-top:0;grid-template-columns:1fr 1fr}
-@media (max-width:560px){.desk .case{grid-template-columns:1fr}}
-details{margin-top:4px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:12px 16px;font-size:16px}
-details summary{cursor:pointer;font-weight:600}
-details p{margin-top:8px;color:var(--ink2);max-width:64ch}
-.method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
-@media (max-width:860px){.method{grid-template-columns:1fr 1fr}}
-@media (max-width:480px){.method{grid-template-columns:1fr}}
-.method div{border-top:2px solid var(--ink);padding-top:8px;font-size:15.5px;color:var(--ink2)}
-.method b{display:block;color:var(--ink);font-size:16.5px}
-.fine{font-size:14.5px;color:var(--muted);max-width:80ch;margin-top:18px}
-footer{padding-block:28px 48px;font-size:14px;color:var(--muted)}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+.act{background:var(--paper);border:1px solid var(--rule);border-top:5px solid var(--good);border-radius:10px;padding:18px 20px}
+.act b{font-family:var(--serif);font-size:23px;display:block;margin-bottom:4px}
+.act p{color:var(--ink2);font-size:17px}
+.browse{margin-top:22px;border:1px solid var(--rule);background:var(--paper);border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
+.browse:hover{background:var(--hover)}
+.method{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:22px}
+.method div{border-top:2px solid var(--ink);padding-top:8px;font-size:16.5px;color:var(--ink2)}
+.method b{display:block;color:var(--ink);font-size:17.5px}
+.fine{font-size:15.5px;color:var(--muted);max-width:86ch;margin-top:18px}
+footer{padding-block:28px 56px;font-size:15px;color:var(--muted)}
+/* modal */
+.shade{position:fixed;inset:0;background:var(--shade);display:grid;place-items:center;z-index:50}
+.modal{width:min(980px,92vw);max-height:88vh;overflow:auto;background:var(--bg);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:26px 28px 24px;position:relative}
+.modal h3{font-family:var(--serif);font-size:30px;margin:0 0 4px;font-weight:800;padding-right:40px}
+.modal .sub{color:var(--ink2);margin-bottom:16px}
+.close{position:absolute;top:16px;right:18px;border:1px solid var(--rule);background:var(--paper);border-radius:99px;width:36px;height:36px;font-size:20px;cursor:pointer;line-height:1}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.mgrid div{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 14px}
+.mgrid b{display:block;font-family:var(--serif);font-size:28px}
+.mgrid span{font-size:15px;color:var(--ink2)}
+ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper)}
+.mlist button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:6px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:16.5px}
+.mlist button:hover{background:var(--hover)}
+.mlist button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.mlist i{align-self:stretch;border-radius:3px}
+.mlist small{display:block;color:var(--muted);font-size:14px}
+.mlist .amt{font-family:var(--mono);font-size:14.5px}
+.back{border:0;background:none;color:var(--ink2);cursor:pointer;padding:0;margin-bottom:10px;font-size:15.5px}
+.letter{margin-top:14px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 18px;font-size:16.5px;color:var(--ink2)}
+.letter b{color:var(--ink)}
 </style>
 </head>
 <body>
-
 <div class="col">
+  <div class="topbar"><span class="kicker" style="margin:0">Nothing to Declare? · A disclosure check of medical journals, 2023–2026</span>
+    <button class="toggle" id="theme" aria-pressed="false">Dark mode</button></div>
+
   <section class="hero">
-    <p class="kicker">Nothing to Declare? · A disclosure check of medical journals, 2023–2026</p>
     <h1>One in three medical papers has an author who didn't declare <span class="red">drug-company money</span>.</h1>
-    <p class="lede">Papers end with a promise: <em>"The authors declare no conflicts of interest."</em> Nobody checks it. We compared those statements with the US government's public record of payments from drug and device makers to doctors.</p>
+    <p class="lede">Papers end with a promise: <em>"The authors declare no conflicts of interest."</em> Nobody checks it. We compared those statements with the US government's public record of payments from drug and device makers to doctors. Half the papers pass cleanly. A third don't.</p>
     <div class="hero-grid">
       <div class="papers">
-        <canvas id="grid" role="img" aria-label="Grid of papers coloured by disclosure status"></canvas>
+        <canvas id="grid" role="img" aria-label="Grid of 2,878 papers coloured by disclosure status. Click a square to open that paper."></canvas>
         <div class="legend" id="gridLegend"></div>
+        <p class="hint">Click any square to open that paper's check.</p>
       </div>
       <div class="stats" id="stats"></div>
     </div>
@@ -140,36 +149,41 @@ footer{padding-block:28px 48px;font-size:14px;color:var(--muted)}
   </section>
 
   <section>
-    <p class="kicker">How much</p>
-    <h2>This is mostly real money, not free lunches.</h2>
-    <p class="body" id="amountText"></p>
-    <div class="chart"><svg id="amounts" viewBox="0 0 960 300" role="img" aria-label="Undeclared amounts per author"></svg>
-      <p class="cap">Undeclared payments per flagged author, in the three years before publication. 1 US dollar ≈ ₹100.</p></div>
+    <p class="kicker">How authors declare</p>
+    <h2>Of the authors who were paid by industry, few declared everything.</h2>
+    <p class="body" id="declText"></p>
+    <div class="splitbar" id="declbar"></div>
+    <p class="hint">Click a segment to see those authors.</p>
   </section>
 
   <section>
-    <div class="split">
-      <div>
-        <p class="kicker">Where</p>
-        <h2>Every specialty has it. Some far more than others.</h2>
-        <div class="chart"><svg id="fields" viewBox="0 0 480 420" role="img" aria-label="Share of checked authors flagged, by field"></svg>
-          <p class="cap">Share of checked US authors with undeclared payments. Amber: the paper declared no <em>relevant</em> conflicts.</p></div>
-      </div>
-      <div>
-        <p class="kicker">Who pays</p>
-        <h2>The biggest names in pharma and devices.</h2>
-        <div class="chart"><svg id="payers" viewBox="0 0 480 420" role="img" aria-label="Companies most often left undeclared"></svg>
-          <p class="cap">Number of flagged authors paid by each company that their paper did not declare.</p></div>
-      </div>
-    </div>
+    <p class="kicker">How much</p>
+    <h2>This is mostly real money, not free lunches.</h2>
+    <p class="body" id="amountText"></p>
+    <div class="chart"><svg id="swarm" viewBox="0 0 1090 400" role="img" aria-label="Each flagged author as a dot on a dollar scale"></svg>
+      <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the three years before publication (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts. Click a dot to open the case.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">Where</p>
+    <h2>In every specialty most authors are clean, but the red share varies seven-fold.</h2>
+    <div class="chart"><svg id="fields" viewBox="0 0 1090 470" role="img" aria-label="Share of checked authors green, amber and red, by specialty"></svg>
+      <p class="cap">Share of checked US authors in each field. Green: declaration matches the record. Amber: declared only "no relevant" conflicts. Red: undeclared payments. Click a field for its cases.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">Who pays</p>
+    <h2>Some companies' money gets declared. Others' mostly doesn't.</h2>
+    <div class="chart"><svg id="companies" viewBox="0 0 1090 560" role="img" aria-label="Authors paid by each company, declared versus not declared"></svg>
+      <p class="cap">Checked authors with significant payments from each corporate group, split by whether their paper declared that company. Click a company for its undeclared cases.</p></div>
   </section>
 
   <section>
     <p class="kicker">Trend</p>
-    <h2>And it is not going away.</h2>
+    <h2>The red slice has grown with every year of papers.</h2>
     <p class="body" id="trendText"></p>
-    <div class="chart"><svg id="trend" viewBox="0 0 960 280" role="img" aria-label="Share of checked authors flagged, by publication year"></svg>
-      <p class="cap">2023 covers October to December only. Older papers look back at earlier payment years, so part of the rise may reflect the data, not behaviour.</p></div>
+    <div class="chart"><svg id="trend" viewBox="0 0 1090 330" role="img" aria-label="Share of checked authors by status and publication year"></svg>
+      <p class="cap">2023 covers October to December only. Older papers look back at earlier payment years, so part of the rise may reflect the data, not behaviour. Click a year for its cases.</p></div>
   </section>
 
   <section>
@@ -180,23 +194,7 @@ footer{padding-block:28px 48px;font-size:14px;color:var(--muted)}
       <div class="act"><b>Ask, don't accuse</b><p>Send the author the evidence with a polite query. Most gaps are omissions, fixed with one updated line.</p></div>
       <div class="act"><b>Publish with confidence</b><p>Readers, reviewers and regulators trust disclosures that have been checked. That is a quality mark competitors don't have.</p></div>
     </div>
-  </section>
-
-  <section>
-    <p class="kicker">Explore</p>
-    <h2>Walk through the red channel yourself.</h2>
-    <div class="explorer">
-      <div class="queue">
-        <div class="controls">
-          <label for="f-field">Field <select id="f-field"><option value="">All</option></select></label>
-          <label for="f-min">At least <select id="f-min"><option value="0">any</option><option value="5000" selected>$5k</option><option value="10000">$10k</option><option value="50000">$50k</option></select></label>
-          <label for="f-sort">Sort <select id="f-sort"><option value="usd">Largest</option><option value="year">Newest</option></select></label>
-          <span class="count" id="qcount"></span>
-        </div>
-        <ul class="list" id="list"></ul>
-      </div>
-      <div class="desk" id="desk"></div>
-    </div>
+    <button class="browse" id="browseAll">Browse all flagged authors</button>
   </section>
 
   <section>
@@ -212,105 +210,188 @@ footer{padding-block:28px 48px;font-size:14px;color:var(--muted)}
   </section>
 </div>
 <footer class="col">Data: Europe PMC (papers), CMS Open Payments 2020–2025 (payments).</footer>
+<div id="modalRoot"></div>
 
 <script>
 const $=id=>document.getElementById(id);
-const fmt=n=>"$"+Math.round(n).toLocaleString("en-US");
 const k=n=>n>=1e6?"$"+(n/1e6).toFixed(1)+"M":n>=1e3?"$"+Math.round(n/1e3)+"k":"$"+n;
 const inr=n=>{const v=n*100;return v>=1e7?"₹"+(v/1e7).toFixed(1)+" crore":"₹"+(v/1e5).toFixed(1)+" lakh"};
+const pct=x=>Math.round(100*x)+"%";
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const SMALL=new Set(["and","of","the","for","de"]);
-const nice=s=>s.split(/(\s+)/).map(w=>{const t=w.replace(/[^A-Za-z]/g,"");if(!t)return w;if(t.length<=3&&!SMALL.has(t.toLowerCase())&&!/^(inc|llc|ltd|co)$/i.test(t))return w.toUpperCase();if(SMALL.has(t.toLowerCase()))return w.toLowerCase();return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join("").replace(/\bInc\b/,"Inc").replace(/L\.l\.c\.?/i,"LLC");
+const nice=s=>s.split(/(\s+)/).map(w=>{const t=w.replace(/[^A-Za-z]/g,"");if(!t)return w;const l=t.toLowerCase();if(SMALL.has(l))return w.toLowerCase();if(t.length<=3&&!/^(inc|llc|ltd|co)$/.test(l))return w.toUpperCase();return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join("").replace(/L\.l\.c\.?/i,"LLC");
 const ptype=t=>t.startsWith("Other")?"Other payments (e.g. royalties)":t.replace(/ \(speaker\/faculty\)/,"").replace("Compensation for services other than consulting","Speaker / faculty fees");
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-let S,C,shown=30,cur=null;
+const amt=c=>c.banded?k(c.usd)+"+":k(c.usd);
+let S,C,P,byId={};
 
-function grid(){
-  const cv=$("grid"),w=cv.clientWidth,dpr=window.devicePixelRatio||1,ps=S.paper_status;
-  const order=[["red",ps.red||0],["amber",ps.amber||0],["green",ps.green||0],["grey",ps.grey||0]];
-  const total=order.reduce((a,b)=>a+b[1],0),cell=w<520?5:7,gap=2,cols=Math.floor(w/(cell+gap)),rows=Math.ceil(total/cols);
-  cv.style.height=rows*(cell+gap)+"px";cv.width=w*dpr;cv.height=rows*(cell+gap)*dpr;
-  const g=cv.getContext("2d");g.scale(dpr,dpr);
-  const col={red:css("--bad"),amber:css("--warn"),green:css("--good"),grey:css("--none")};let i=0;
-  for(const [kind,n] of order){g.fillStyle=col[kind];for(let j=0;j<n;j++,i++){const x=(i%cols)*(cell+gap),y=Math.floor(i/cols)*(cell+gap);g.beginPath();g.roundRect?g.roundRect(x,y,cell,cell,1.5):g.rect(x,y,cell,cell);g.fill()}}
-  const lab={red:"Undeclared payments",amber:"Declared only \"no relevant\" conflicts",green:"Declaration matches the record",grey:"No US author could be checked"};
-  const vr={red:"--bad",amber:"--warn",green:"--good",grey:"--none"};
-  $("gridLegend").innerHTML=`<span style="color:var(--muted)">Each square is one paper (${total.toLocaleString()})</span>`+order.map(([kd,n])=>`<span><i style="background:var(${vr[kd]})"></i>${lab[kd]} · <b class="num">${n.toLocaleString()}</b></span>`).join("");
-}
-function stats(){
-  const c=S.channels,checked=c.red+c.amber+c.green,pp=Math.round(100*S.red_papers/S.papers);
-  $("stats").innerHTML=`
-   <div class="stat"><b class="red">${pp}%</b><span>of papers (${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()}) have at least one author with undeclared payments</span></div>
-   <div class="stat"><b class="red">1 in ${Math.round(checked/c.red)}</b><span>checked US authors took money their paper did not declare (${c.red.toLocaleString()} of ${checked.toLocaleString()})</span></div>
-   <div class="stat"><b>${inr(S.median_usd)}</b><span>typical undeclared amount per author (median ${k(S.median_usd)}); ${Math.round(100*S.fees_share)}% include consulting or speaker fees</span></div>`;
-}
-function caseCard(c,big){
-  const blanket=c.reason.startsWith("statement declares");
+/* ---------- theme (light by default) ---------- */
+function setTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"Light mode":"Dark mode";$("theme").setAttribute("aria-pressed",t==="dark");try{localStorage.setItem("ntd-theme",t)}catch(e){} if(P)drawGrid()}
+$("theme").onclick=()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+try{if(localStorage.getItem("ntd-theme")==="dark")setTheme("dark")}catch(e){}
+
+/* ---------- modal ---------- */
+let lastFocus=null;
+function openModal(html){lastFocus=document.activeElement;$("modalRoot").innerHTML=`<div class="shade" id="shade"><div class="modal" role="dialog" aria-modal="true"><button class="close" id="mclose" aria-label="Close">×</button><div id="mbody">${html}</div></div></div>`;
+  $("shade").onclick=e=>{if(e.target.id==="shade")closeModal()};$("mclose").onclick=closeModal;$("mclose").focus()}
+function setModal(html){$("mbody").innerHTML=html;$("mclose").focus()}
+function closeModal(){$("modalRoot").innerHTML="";lastFocus&&lastFocus.focus()}
+addEventListener("keydown",e=>{if(e.key==="Escape"&&$("shade"))closeModal()});
+
+function caseBlock(c,tight){
+  const blanket=c.reason.startsWith("statement declares"),amb=c.ch==="amber";
   const pays=c.items.map(i=>`<div class="pay"><b>${esc(nice(i.company))}</b><em>${i.band||k(i.usd)}</em><small>${i.types.slice(0,3).map(t=>esc(ptype(t))).join(" · ")}</small></div>`).join("");
   const tot=c.banded?"at least "+k(c.usd):k(c.usd)+" ≈ "+inr(c.usd);
-  return `<div class="case">
+  const decl=amb?'"No relevant conflicts"':blanket?"None declared":"Some declared, these companies missing";
+  return `<div class="case${tight?" tight":""}">
     <div class="form"><div class="ft">The declaration · as published</div>
       <div>${esc(c.specialty)}, US ${esc(c.region)}</div><div>${esc(c.field)} paper, ${c.year}</div>
-      <div>Conflicts of interest: <b>${blanket?"None declared":"Some declared, these companies missing"}</b></div>
-      ${blanket?'<div class="stamp">NOTHING TO DECLARE</div>':""}</div>
-    ${big?'<div class="vs">vs</div>':""}
-    <div class="xray"><div class="ft">The X-ray · what companies reported paying</div>${pays}
-      <div class="pay" style="border-color:#33414f;box-shadow:none"><b>Undeclared total</b><em>${tot}</em></div></div>
-  </div>`;
+      <div>Conflicts of interest: <b>${decl}</b></div>${blanket&&!amb?'<div class="stamp">NOTHING TO DECLARE</div>':""}</div>
+    ${tight?"":'<div class="vs">vs</div>'}
+    <div class="xray"><div class="ft">The X-ray · what companies reported paying</div>${pays}<div class="pay total"><b>Undeclared total</b><em>${tot}</em></div></div></div>`;
 }
-function heroCase(){
-  const c=C.find(x=>x.reason.startsWith("statement declares")&&x.fees&&!x.banded&&x.items.length===2&&x.usd>=20000&&x.usd<=60000)||C[0];
-  $("hero-case").innerHTML=caseCard(c,true)+`<div class="verdict"><b>Red channel.</b> The paper says it has nothing to declare, while ${c.items.map(i=>esc(nice(i.company))).join(" and ")} reported paying this author ${k(c.usd)} (${inr(c.usd)}). A journal would send a polite query; today, nobody does.</div>`;
+function caseView(c,back){
+  const amb=c.ch==="amber",cos=c.items.map(i=>esc(nice(i.company))).join(" and ");
+  return `${back?`<button class="back" id="mback">← Back to the list</button>`:""}<h3>${amb?"Amber":"Red"} channel · ${esc(c.specialty)}, US ${esc(c.region)}</h3>
+   <p class="sub">${esc(c.field)} paper published in ${c.year}. ${amb?"The paper limits its statement to relevant conflicts, so whether these needed declaring depends on journal policy.":"The paper's declaration leaves out these payments."}</p>
+   ${caseBlock(c,true)}
+   <div class="letter"><b>Draft query the editor could send:</b> Dear Dr —, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the three years before your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
 }
-function bars(svgId,rows,opt){
-  // rows: [{label, a (red), b (amber, optional), text}]
-  const svg=$(svgId),W=opt.W,LW=opt.lw,rh=opt.rh,top=6,max=Math.max(...rows.map(r=>r.a+(r.b||0)));
-  const H=top+rows.length*rh+6;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
-  const sc=v=>(W-LW-70)*v/max;
-  svg.innerHTML=rows.map((r,i)=>{const y=top+i*rh,wA=sc(r.a),wB=sc(r.b||0);
-    return `<g><title>${esc(r.label)}: ${r.text}</title><text x="${LW-10}" y="${y+rh/2+5}" text-anchor="end" class="${i<opt.hl?"lab":""}">${esc(r.label)}</text>
-      <rect x="${LW}" y="${y+5}" width="${Math.max(2,wA)}" height="${rh-12}" rx="3" fill="var(--bad)"/>
-      ${wB>0?`<rect x="${LW+wA+2}" y="${y+5}" width="${Math.max(2,wB-2)}" height="${rh-12}" rx="3" fill="var(--warn)"/>`:""}
-      <text x="${LW+wA+wB+8}" y="${y+rh/2+5}" class="val">${r.text}</text></g>`}).join("");
+function listView(title,sub,cases,stats){
+  const rows=cases.slice().sort((a,b)=>b.usd-a.usd).slice(0,200);
+  const html=()=>`<h3>${esc(title)}</h3><p class="sub">${sub}</p>${stats||""}
+   <ul class="mlist">${rows.map(c=>`<li><button data-id="${c.id}"><i style="background:var(${c.ch==="amber"?"--warn":"--bad"})"></i><span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${c.items.map(i=>esc(i.fam)).slice(0,4).join(", ")}${c.items.length>4?" +"+(c.items.length-4):""}</small></span><span class="amt">${amt(c)}</span></button></li>`).join("")}</ul>
+   ${cases.length>200?`<p class="hint">Showing the 200 largest of ${cases.length.toLocaleString()}.</p>`:""}`;
+  const wire=()=>$("mbody").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{setModal(caseView(byId[b.dataset.id],true));$("mback").onclick=()=>{setModal(html());wire()}});
+  openModal(html());wire();
 }
-function charts(){
-  // amounts histogram
-  const bins=S.amount_bins,tot=bins.reduce((a,b)=>a+b[1],0),svg=$("amounts"),W=960,H=300,b0=40,bh=200,mx=Math.max(...bins.map(b=>b[1])),bw=(W-60)/bins.length;
-  svg.innerHTML=`<line class="axis" x1="30" x2="${W-30}" y1="${b0+bh}" y2="${b0+bh}"/>`+bins.map((b,i)=>{const h=bh*b[1]/mx,x=30+i*bw+8,big=i>=3;
-    return `<g><title>${b[0]}: ${b[1]} authors</title><rect x="${x}" y="${b0+bh-h}" width="${bw-16}" height="${h}" rx="4" fill="var(--bad)" opacity="${big?1:.55}"/>
-    <text x="${x+(bw-16)/2}" y="${b0+bh-h-8}" text-anchor="middle" class="val">${b[1]} · ${Math.round(100*b[1]/tot)}%</text>
-    <text x="${x+(bw-16)/2}" y="${b0+bh+22}" text-anchor="middle" class="${big?"lab":""}">${b[0]}</text></g>`}).join("")
-    +(()=>{const over10=bins.slice(3).reduce((a,b)=>a+b[1],0);const x0=30+3*bw+8,x1=30+6*bw-8;return `<path d="M${x0} 22 H${x1}" stroke="var(--ink)" stroke-width="1.5"/><text x="${(x0+x1)/2}" y="14" text-anchor="middle" class="note">${Math.round(100*over10/tot)}% got more than $10k (₹10 lakh)</text>`})();
-  $("amountText").innerHTML=`Half of the flagged authors received more than <b class="num">${k(S.median_usd)}</b> (${inr(S.median_usd)}) that their paper never mentioned. <b>${Math.round(100*S.fees_share)}%</b> of them were paid consulting, speaker or other fees, the kind of relationship journals ask authors to declare.`;
-  // fields
-  const fr=Object.entries(S.by_field).map(([f,v])=>{const n=(v.red||0)+(v.amber||0)+(v.green||0);return {f,n,r:(v.red||0)/n,a:(v.amber||0)/n}}).filter(x=>x.n>=50).sort((a,b)=>b.r-a.r);
-  bars("fields",fr.map(x=>({label:x.f,a:x.r,b:x.a,text:`${(100*x.r).toFixed(0)}% · 1 in ${Math.round(1/x.r)}`})),{W:480,lw:170,rh:34,hl:2});
-  // payers
-  bars("payers",S.top_companies.slice(0,10).map(([co,n])=>({label:nice(co).replace(/,? (Inc|Corporation|LLC|LP|Company)\.?$/i,"").replace(/ Pharmaceuticals?/,"").slice(0,26),a:n,text:n})),{W:480,lw:190,rh:38,hl:3});
-  // trend
-  const ys=Object.entries(S.by_year_rate).map(([y,v])=>({y,r:v.red/v.checked})),t=$("trend"),TW=960,TH=280,l=90,r=60,tp=40,bt=230,mxr=Math.max(...ys.map(d=>d.r))*1.25;
-  const X=i=>l+i*(TW-l-r)/(ys.length-1),Y=v=>bt-(bt-tp)*v/mxr;
-  t.innerHTML=[0,.05,.1].map(v=>`<line class="axis" x1="${l}" x2="${TW-r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${l-10}" y="${Y(v)+5}" text-anchor="end" class="val">${v*100}%</text>`).join("")
-   +`<path d="M${ys.map((d,i)=>X(i)+" "+Y(d.r)).join(" L")}" fill="none" stroke="var(--bad)" stroke-width="3"/>`
-   +ys.map((d,i)=>`<g><title>${d.y}: ${(100*d.r).toFixed(1)}%</title><circle cx="${X(i)}" cy="${Y(d.r)}" r="6" fill="var(--bad)" stroke="var(--paper)" stroke-width="2"/><text x="${X(i)+(i===0?14:0)}" y="${Y(d.r)+(i===0?24:-14)}" text-anchor="${i===0?"start":"middle"}" class="note">${(100*d.r).toFixed(1)}%</text><text x="${X(i)}" y="${bt+26}" text-anchor="middle">${d.y}</text></g>`).join("");
-  const a=ys[0],z=ys[ys.length-1];
-  $("trendText").innerHTML=`The share of checked authors with undeclared payments went from <b class="num">${(100*a.r).toFixed(1)}%</b> of papers published in ${a.y} to <b class="num">${(100*z.r).toFixed(1)}%</b> in ${z.y}. Disclosure rules have not closed the gap.`;
+function miniStats(cs){const t=cs.map(c=>c.usd).sort((a,b)=>a-b),med=t[Math.floor(t.length/2)]||0,fam={};cs.forEach(c=>c.items.forEach(i=>fam[i.fam]=(fam[i.fam]||0)+1));
+  const top=Object.entries(fam).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]).join(", ");
+  return `<div class="mgrid"><div><b>${cs.length.toLocaleString()}</b><span>flagged authors</span></div><div><b>${k(med)}</b><span>median undeclared (${inr(med)})</span></div><div><b style="font-size:20px;line-height:1.3">${esc(top)}</b><span>most often undeclared</span></div></div>`}
+
+/* ---------- hero ---------- */
+let gridLayout=null;
+function drawGrid(){
+  const cv=$("grid"),w=cv.clientWidth,dpr=window.devicePixelRatio||1;
+  const sorted=["red","amber","green","grey"].flatMap(s=>P.filter(p=>p.s===s));
+  const cell=9,gap=2,cols=Math.floor((w+gap)/(cell+gap)),rows=Math.ceil(sorted.length/cols);
+  cv.style.height=rows*(cell+gap)+"px";cv.width=w*dpr;cv.height=rows*(cell+gap)*dpr;
+  const g=cv.getContext("2d");g.scale(dpr,dpr);const col={red:css("--bad"),amber:css("--warn"),green:css("--good"),grey:css("--none")};
+  sorted.forEach((p,i)=>{g.fillStyle=col[p.s];const x=(i%cols)*(cell+gap),y=Math.floor(i/cols)*(cell+gap);g.beginPath();g.roundRect?g.roundRect(x,y,cell,cell,2):g.rect(x,y,cell,cell);g.fill()});
+  gridLayout={sorted,cols,cell,gap};
 }
-function filtered(){const f=$("f-field").value,m=+$("f-min").value,s=$("f-sort").value;
-  return C.filter(c=>(!f||c.field===f)&&c.usd>=m).sort(s==="usd"?(a,b)=>b.usd-a.usd:(a,b)=>b.year-a.year||b.usd-a.usd)}
-function list(){const all=filtered(),ul=$("list");$("qcount").textContent=`${all.length.toLocaleString()} flagged authors`;
-  if(!cur||!all.includes(cur))cur=all[0]||null;ul.innerHTML="";
-  all.slice(0,shown).forEach(c=>{const li=document.createElement("li"),b=document.createElement("button");b.id="c-"+c.id;b.setAttribute("aria-current",c===cur);
-    b.innerHTML=`<i></i><span>${esc(c.specialty)} · ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${c.items.length} undeclared ${c.items.length>1?"companies":"company"}</small></span><span class="amt">${c.banded?k(c.usd)+"+":k(c.usd)}</span>`;
-    b.onclick=()=>{cur=c;list()};li.appendChild(b);ul.appendChild(li)});
-  if(all.length>shown){const li=document.createElement("li"),m=document.createElement("button");m.className="more";m.id="more";m.textContent="Show more";m.onclick=()=>{shown+=30;list()};li.appendChild(m);ul.appendChild(li)}
-  $("desk").innerHTML=cur?caseCard(cur,false)+`<details><summary>Draft query the editor could send</summary><p>Dear Dr —, as part of a routine disclosure check we noticed that public US records list payments to you from ${cur.items.map(i=>esc(nice(i.company))).join(" and ")} in the three years before your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</p></details>`:`<p class="body">No flagged authors match these filters.</p>`}
-["f-field","f-min","f-sort"].forEach(id=>$(id).addEventListener("change",()=>{shown=30;cur=null;list()}));
-Promise.all([fetch("data/summary.json").then(r=>r.json()),fetch("data/cases.json").then(r=>r.json())]).then(([s,c])=>{S=s;C=c;
-  [...new Set(C.map(x=>x.field))].sort().forEach(f=>{const o=document.createElement("option");o.value=f;o.textContent=f;$("f-field").appendChild(o)});
-  grid();stats();heroCase();charts();list();
-  let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(grid,150)});
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",grid);
+$("grid").addEventListener("click",e=>{if(!gridLayout)return;const r=e.target.getBoundingClientRect(),{sorted,cols,cell,gap}=gridLayout;
+  const i=Math.floor((e.clientY-r.top)/(cell+gap))*cols+Math.floor((e.clientX-r.left)/(cell+gap));const p=sorted[i];if(p)paperView(p)});
+function paperView(p){
+  if(p.c.length){const cs=p.c.map(id=>byId[id]);if(cs.length===1){openModal(caseView(cs[0],false));return}
+    listView(`${p.f} paper, ${p.y}`,`${p.n} US authors checked. ${cs.length} have payments the paper did not declare.`,cs);return}
+  const txt=p.s==="green"?`<div class="verdict g"><b>Green channel.</b> ${p.n} US author${p.n>1?"s":""} checked. ${p.d?`${p.d} had significant industry payments, and the paper declared them.`:"None had significant industry payments on record."} The declaration matches the record.</div>`
+    :`<div class="verdict" style="background:var(--none-bg);border-left-color:var(--none)"><b>Not checkable.</b> No US author on this paper could be matched to one doctor in the payment record, so it was not judged.</div>`;
+  openModal(`<h3>${esc(p.f)} paper, ${p.y}</h3><p class="sub">${p.s==="green"?"Declaration matches the record":"Outside the payment record"}</p>${txt}`);
+}
+function hero(){
+  const ps=S.paper_status,c=S.channels,checked=c.red+c.amber+c.green,lab={red:"Undeclared payments",amber:'Declared only "no relevant" conflicts',green:"Declaration matches the record",grey:"No US author could be checked"},vr={red:"--bad",amber:"--warn",green:"--good",grey:"--none"};
+  $("gridLegend").innerHTML=`<span style="color:var(--muted)">Each square is one paper (${S.papers.toLocaleString()})</span>`+["red","amber","green","grey"].map(s=>`<span><i style="background:var(${vr[s]})"></i>${lab[s]} · <b class="num">${(ps[s]||0).toLocaleString()}</b></span>`).join("");
+  const tiles=[
+    {c:"--bad",big:pct(S.red_papers/S.papers),txt:`of papers have at least one author with undeclared payments (${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()})`,
+     why:`<h3>${pct(S.red_papers/S.papers)} of papers</h3><p class="sub">${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()} papers have at least one US author whom companies reported paying, in the three years before publication, without the paper declaring that company.</p><p class="body">A paper counts once even if several authors are flagged. Papers with no checkable US author (${(ps.grey||0).toLocaleString()}) stay in the total, so this is a conservative share.</p>`},
+    {c:"--good",big:pct(ps.green/S.papers),txt:`of papers pass cleanly: every checked author's declaration matches the record`,
+     why:`<h3>${pct(ps.green/S.papers)} of papers pass</h3><p class="sub">${ps.green.toLocaleString()} papers had no checked author with undeclared payments.</p><p class="body">Across all checked authors, ${pct(c.green/checked)} are green: either they had no significant industry payments, or their paper declared them. ${S.paid_authors.declared_all.toLocaleString()} paid authors declared every company correctly.</p>`},
+    {c:"--bad",big:"1 in "+Math.round(checked/c.red),txt:`checked US authors took money their paper did not declare (${c.red.toLocaleString()} of ${checked.toLocaleString()})`,
+     why:`<h3>1 in ${Math.round(checked/c.red)} authors</h3><p class="sub">${c.red.toLocaleString()} of ${checked.toLocaleString()} checked US authors are red.</p><p class="body">Checked means the author was matched to exactly one doctor in the payment record by name, state and city. ${c.unclear.toLocaleString()} authors with ambiguous matches were left out rather than guessed.</p>`},
+    {c:"--ink",big:inr(S.median_usd),txt:`typical undeclared amount per flagged author (median ${k(S.median_usd)}); ${pct(S.fees_share)} include consulting or speaker fees`,
+     why:`<h3>${inr(S.median_usd)} typical</h3><p class="sub">Half of the flagged authors had more than ${k(S.median_usd)} in undeclared payments over the three years before their paper.</p><p class="body">${pct(S.fees_share)} of flagged authors received consulting, speaker, honoraria or grant payments, not only meals or travel.</p>`}];
+  $("stats").innerHTML=tiles.map((t,i)=>`<button class="stat" id="stat${i}" style="--c:var(${t.c})"><b>${t.big}</b><span>${t.txt}</span></button>`).join("");
+  tiles.forEach((t,i)=>$("stat"+i).onclick=()=>openModal(t.why));
+  const hc=C.find(x=>x.ch==="red"&&x.reason.startsWith("statement declares")&&x.fees&&!x.banded&&x.items.length===2&&x.usd>=20000&&x.usd<=60000)||C[0];
+  $("hero-case").innerHTML=caseBlock(hc,false)+`<div class="verdict"><b>Red channel.</b> The paper says it has nothing to declare, while ${hc.items.map(i=>esc(nice(i.company))).join(" and ")} reported paying this author ${k(hc.usd)} (${inr(hc.usd)}). A journal would send a polite query; today, nobody does.</div>`;
+}
+
+/* ---------- how they declare ---------- */
+function declare(){
+  const d=S.paid_authors,segs=[
+    {k:"good",n:d.declared_all,t:"Declared every company",f:()=>false},
+    {k:"warn",n:d.relevant_only,t:'Said "no relevant conflicts"',f:c=>c.ch==="amber"},
+    {k:"bad2",n:d.missed_some,t:"Declared some, missed others",f:c=>c.ch==="red"&&!c.reason.startsWith("statement declares")},
+    {k:"bad",n:d.said_none,t:'Said "no conflicts" at all',f:c=>c.ch==="red"&&c.reason.startsWith("statement declares")}];
+  const tot=segs.reduce((a,b)=>a+b.n,0);
+  $("declbar").innerHTML=segs.map((s,i)=>`<button id="seg${i}" style="flex:${s.n};background:var(--${s.k})" title="${s.t}: ${s.n}"><b>${pct(s.n/tot)}</b>${s.n/tot>.12?s.t:""}</button>`).join("");
+  segs.forEach((s,i)=>$("seg"+i).onclick=()=>{if(s.k==="good"){openModal(`<h3>${s.n.toLocaleString()} authors declared every company</h3><p class="sub">These authors had significant industry payments on record and their papers named every paying company.</p><div class="verdict g">They are the model the other ${(tot-s.n).toLocaleString()} paid authors could follow.</div>`);return}
+    const cs=C.filter(s.f);listView(s.t,`${cs.length.toLocaleString()} authors.`,cs,miniStats(cs))});
+  $("declText").innerHTML=`Among the ${tot.toLocaleString()} checked authors with significant industry payments, only <b class="grn">${pct(d.declared_all/tot)}</b> declared every paying company. <b class="red">${d.said_none.toLocaleString()}</b> signed a flat "no conflicts" statement.`;
+}
+
+/* ---------- beeswarm of amounts ---------- */
+function swarm(){
+  const svg=$("swarm"),W=1090,L=40,R=30,mid=215,r=2.9,lo=Math.log10(1000),hi=Math.log10(5e6),X=v=>L+(W-L-R)*(Math.log10(Math.max(1000,v))-lo)/(hi-lo);
+  const jit=id=>{let h=2166136261;for(const ch of id){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1274126177);return ((h>>>0)%10000)/10000-.5};
+  const pts=C.map(c=>({c,x:X(c.banded?c.usd*(1+.6*(jit(c.id)+.5)):(c.usd<=1000?1000+600*(jit(c.id)+.5):c.usd+1000*jit(c.id)))})).sort((a,b)=>a.x-b.x),placed=[];
+  for(const p of pts){let step=0;for(;;){const yy=mid+(step%2?1:-1)*Math.ceil(step/2)*(2*r+.6);if(!placed.some(q=>Math.abs(q.x-p.x)<2*r+.4&&Math.abs(q.y-yy)<2*r+.4)){p.y=yy;break}step++;if(step>90){p.y=mid;break}}placed.push(p)}
+  const ticks=[1e3,5e3,1e4,5e4,1e5,1e6],med=S.median_usd;
+  svg.innerHTML=ticks.map(t=>`<line class="axis" x1="${X(t)}" x2="${X(t)}" y1="48" y2="372"/><text x="${X(t)}" y="394" text-anchor="middle" class="val">${k(t)}</text>`).join("")
+   +`<line x1="${X(med)}" x2="${X(med)}" y1="34" y2="372" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 4"/><text x="${X(med)+8}" y="30" class="note">Median ${k(med)} (${inr(med)})</text>`
+   +`<text x="${X(1e5)+8}" y="30" class="note">${S.amount_bins[5][1]} authors over $100k</text>`
+   +placed.map(p=>`<circle class="clk" data-id="${p.c.id}" cx="${p.x.toFixed(1)}" cy="${Math.max(46,Math.min(370,p.y)).toFixed(1)}" r="${r}" fill="var(${p.c.ch==="amber"?"--warn":"--bad"})" opacity=".85"><title>${esc(p.c.specialty)}, ${amt(p.c)}</title></circle>`).join("");
+  svg.onclick=e=>{const id=e.target.dataset&&e.target.dataset.id;if(id)openModal(caseView(byId[id],false))};
+  const over10=S.amount_bins.slice(3).reduce((a,b)=>a+b[1],0),tot=S.amount_bins.reduce((a,b)=>a+b[1],0);
+  $("amountText").innerHTML=`Half of the flagged authors received more than <b class="num">${k(S.median_usd)}</b> (${inr(S.median_usd)}) that their paper never mentioned, and <b>${pct(over10/tot)}</b> more than $10k. <b>${pct(S.fees_share)}</b> were paid consulting, speaker or other fees, the kind of relationship journals ask authors to declare.`;
+}
+
+/* ---------- 100% stacked by field ---------- */
+function fields(){
+  const rows=Object.entries(S.by_field).map(([f,v])=>({label:f,g:v.green||0,a:v.amber||0,r:v.red||0})).filter(x=>x.g+x.a+x.r>=50).sort((a,b)=>b.r/(b.g+b.a+b.r)-a.r/(a.g+a.a+a.r));
+  const svg=$("fields"),W=1090,lw=230,rh=40,top=8,BW=W-lw-100,H=top+rows.length*rh+8;
+  svg.innerHTML=rows.map((r,i)=>{const y=top+i*rh,t=r.g+r.a+r.r,wg=BW*r.g/t,wa=BW*r.a/t,wr=BW*r.r/t,x0=lw;
+    return `<g class="clk row" data-i="${i}"><rect class="hov" x="0" y="${y}" width="${W}" height="${rh}" fill="transparent"/><title>${esc(r.label)}: ${pct(r.r/t)} red, ${pct(r.g/t)} green</title>
+     <text x="${lw-12}" y="${y+rh/2+5}" text-anchor="end" class="lab">${esc(r.label)}</text>
+     <rect x="${x0}" y="${y+6}" width="${wr}" height="${rh-12}" rx="3" fill="var(--bad)"/>
+     <rect x="${x0+wr+2}" y="${y+6}" width="${Math.max(0,wa-2)}" height="${rh-12}" fill="var(--warn)"/>
+     <rect x="${x0+wr+wa+2}" y="${y+6}" width="${Math.max(0,wg-2)}" height="${rh-12}" rx="3" fill="var(--good)"/>
+     ${wr>46?`<text x="${x0+8}" y="${y+rh/2+5}" class="on">${pct(r.r/t)}</text>`:""}
+     <text x="${x0+BW-8}" y="${y+rh/2+5}" text-anchor="end" class="on">${pct(r.g/t)}</text>
+     <text x="${x0+BW+12}" y="${y+rh/2+5}" class="val">${t.toLocaleString()}</text></g>`}).join("")
+   +`<text x="${lw}" y="${H+18}" class="val">← red share</text><text x="${lw+BW}" y="${H+18}" text-anchor="end" class="val">green share →</text><text x="${lw+BW+12}" y="${H+18}" class="val">authors</text>`;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H+28}`);
+  svg.querySelectorAll(".row").forEach(g=>g.onclick=()=>{const r=rows[+g.dataset.i],cs=C.filter(c=>c.field===r.label),t=r.g+r.a+r.r;
+    listView(r.label,`${t.toLocaleString()} US authors checked: ${pct(r.g/t)} green, ${pct(r.a/t)} amber, ${pct(r.r/t)} red.`,cs,miniStats(cs))});
+}
+
+/* ---------- diverging declared vs undeclared, by company ---------- */
+function companies(){
+  const rows=S.companies.slice().sort((a,b)=>b.undeclared/(b.declared+b.undeclared)-a.undeclared/(a.declared+a.undeclared)),svg=$("companies"),W=1090,cx=560,rh=36,top=40,mx=Math.max(...rows.map(r=>Math.max(r.declared,r.undeclared))),sc=v=>330*v/mx,H=top+rows.length*rh+10;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  svg.innerHTML=`<text x="${cx-12}" y="18" text-anchor="end" class="note" style="fill:var(--good)">← Declared</text><text x="${cx+12}" y="18" class="note" style="fill:var(--bad)">Not declared →</text><line class="axis" x1="${cx}" x2="${cx}" y1="28" y2="${H}"/>`
+   +rows.map((r,i)=>{const y=top+i*rh,t=r.declared+r.undeclared;return `<g class="clk row" data-i="${i}"><rect class="hov" x="0" y="${y}" width="${W}" height="${rh}" fill="transparent"/><title>${esc(r.name)}: ${pct(r.undeclared/t)} not declared</title>
+     <text x="${cx-sc(r.declared)-12}" y="${y+rh/2+5}" text-anchor="end"><tspan class="lab">${esc(r.name)}</tspan><tspan class="val" dx="8">${r.declared}</tspan></text>
+     <rect x="${cx-sc(r.declared)}" y="${y+6}" width="${sc(r.declared)}" height="${rh-12}" rx="3" fill="var(--good)"/>
+     <rect x="${cx+1}" y="${y+6}" width="${sc(r.undeclared)}" height="${rh-12}" rx="3" fill="var(--bad)"/>
+     <text x="${cx+sc(r.undeclared)+10}" y="${y+rh/2+5}" class="val">${r.undeclared} · ${pct(r.undeclared/t)} missed</text></g>`}).join("");
+  svg.querySelectorAll(".row").forEach(g=>g.onclick=()=>{const r=rows[+g.dataset.i],cs=C.filter(c=>c.items.some(i=>i.fam===r.name)),t=r.declared+r.undeclared;
+    listView(r.name,`${t.toLocaleString()} checked authors had significant payments from ${esc(r.name)}. ${r.declared} papers declared it; ${r.undeclared} did not.`,cs,miniStats(cs))});
+}
+
+/* ---------- stacked columns by year ---------- */
+function trend(){
+  const ys=Object.entries(S.by_year_mix),svg=$("trend"),W=1090,b=280,h=230,bw=150,gapx=(W-ys.length*bw)/(ys.length+1);
+  svg.innerHTML=ys.map(([y,v],i)=>{const t=v.green+v.amber+v.red,x=gapx+i*(bw+gapx),hr=h*v.red/t,ha=h*v.amber/t,hg=h*v.green/t;
+    return `<g class="clk row" data-y="${y}"><title>${y}: ${(100*v.red/t).toFixed(1)}% red</title>
+     <rect x="${x}" y="${b-hg}" width="${bw}" height="${hg}" rx="3" fill="var(--good)"/>
+     <rect x="${x}" y="${b-hg-ha-2}" width="${bw}" height="${ha}" fill="var(--warn)"/>
+     <rect x="${x}" y="${b-hg-ha-hr-4}" width="${bw}" height="${hr}" rx="3" fill="var(--bad)"/>
+     <text x="${x+bw/2}" y="${b-hg-ha-hr-14}" text-anchor="middle" class="note" style="fill:var(--bad)">${(100*v.red/t).toFixed(1)}% red</text>
+     <text x="${x+bw/2}" y="${b-hg/2+5}" text-anchor="middle" class="on">${pct(v.green/t)} green</text>
+     <text x="${x+bw/2}" y="${b+26}" text-anchor="middle" class="lab">${y}</text>
+     <text x="${x+bw/2}" y="${b+44}" text-anchor="middle" class="val">${t.toLocaleString()} authors</text></g>`}).join("");
+  svg.setAttribute("viewBox",`0 0 ${W} ${b+52}`);
+  svg.querySelectorAll(".row").forEach(g=>g.onclick=()=>{const y=+g.dataset.y,cs=C.filter(c=>c.year===y);listView(`Papers published in ${y}`,`${cs.length.toLocaleString()} flagged authors.`,cs,miniStats(cs))});
+  const a=ys[0],z=ys[ys.length-1],ra=a[1].red/(a[1].green+a[1].amber+a[1].red),rz=z[1].red/(z[1].green+z[1].amber+z[1].red);
+  $("trendText").innerHTML=`Most authors stay green every year. But the red share went from <b class="num">${(100*ra).toFixed(1)}%</b> of checked authors on ${a[0]} papers to <b class="num">${(100*rz).toFixed(1)}%</b> on ${z[0]} papers. Disclosure rules have not closed the gap.`;
+}
+
+$("browseAll").onclick=()=>listView("All flagged authors",`${C.length.toLocaleString()} authors in the red or amber channel.`,C,miniStats(C));
+Promise.all(["summary","cases","papers"].map(n=>fetch(`data/${n}.json`).then(r=>r.json()))).then(([s,c,p])=>{S=s;C=c;P=p;C.forEach(x=>byId[x.id]=x);
+  drawGrid();hero();declare();swarm();fields();companies();trend();
+  let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(drawGrid,150)});
 }).catch(()=>{$("stats").innerHTML='<p class="body">Could not load the results. Reload the page to try again.</p>'});
 </script>
 </body>

@@ -1,10 +1,12 @@
 """Step 4 — anonymise results for the public dashboard and draw a private verification sample."""
+import hashlib
 import csv
 import json
 import random
 from collections import Counter, defaultdict
 
 from common import PUBLIC, RESULTS, cfg, log, read_jsonl
+from companies import family
 
 REGION = {**{s: "Northeast" for s in "CT ME MA NH RI VT NJ NY PA".split()},
           **{s: "Midwest" for s in "IL IN MI OH WI IA KS MN MO NE ND SD".split()},
@@ -30,21 +32,23 @@ def main():
     step = c["publish"]["round_usd_to"]
     rows = read_jsonl(RESULTS / "authors.jsonl")
     red = [r for r in rows if r["channel"] == "red"]
+    flagged = [r for r in rows if r["channel"] in ("red", "amber")]
 
-    cases = []
-    for i, r in enumerate(sorted(red, key=lambda r: (r["date"], r["pmcid"])), 1):
+    cases, case_of = [], {}
+    for i, r in enumerate(sorted(flagged, key=lambda r: (r["date"], r["pmcid"])), 1):
         items = []
         for co in r["undeclared"]:
             v = r["paid"][co]
             floor, label = band(v["total"])
-            item = {"company": co, "usd": floor or rnd(v["total"], step),
+            item = {"company": co, "fam": family(co), "usd": floor or rnd(v["total"], step),
                     "types": sorted(v["types"], key=lambda t: -v["types"][t])}
             if label:
                 item["band"] = label
             items.append(item)
         fee_types = ("Consulting", "Compensation", "Honoraria", "Grant", "Royalty")
         fees = any(t.startswith(fee_types) for x in items for t in x["types"])
-        cases.append({"id": f"C{i:04d}", "field": r["field"], "year": int(r["date"][:4]), "fees": fees,
+        case_of[id(r)] = f"C{i:04d}"
+        cases.append({"id": f"C{i:04d}", "ch": r["channel"], "field": r["field"], "year": int(r["date"][:4]), "fees": fees,
                       "specialty": r.get("specialty") or "Clinician", "region": REGION.get(r["state"], "US"),
                       "reason": r["reason"], "items": items, "usd": sum(x["usd"] for x in items),
                       "banded": any("band" in x for x in items)})
@@ -85,7 +89,45 @@ def main():
     summary["amount_bins"] = [[lab, sum(lo <= t < hi for t in totals)] for lo, hi, lab in bins]
     summary["fees_share"] = round(sum(x["fees"] for x in cases) / max(1, len(cases)), 3)
     summary["blanket_red"] = sum(r["reason"] == "statement declares no conflicts" for r in red)
-    (PUBLIC / "cases.json").write_text(json.dumps(cases, indent=1))
+    # papers: anonymised, shuffled order within status; each links to its flagged cases
+    papers = defaultdict(lambda: {"authors": 0, "paid_declared": 0, "cases": [], "chs": set()})
+    for r in rows:
+        P = papers[r["pmcid"]]
+        P["f"], P["y"] = r["field"], int(r["date"][:4])
+        P["chs"].add(r["channel"])
+        if r["channel"] in ("red", "amber", "green", "unclear"):
+            P["authors"] += 1
+        if r["channel"] == "green" and r.get("paid"):
+            P["paid_declared"] += 1
+        if id(r) in case_of:
+            P["cases"].append(case_of[id(r)])
+    def pst(ch):
+        return "red" if "red" in ch else "amber" if "amber" in ch else "green" if "green" in ch else "grey"
+    plist = [{"s": pst(v["chs"]), "f": v["f"], "y": v["y"], "n": v["authors"], "d": v["paid_declared"], "c": v["cases"]}
+             for _, v in sorted(papers.items(), key=lambda kv: hashlib.md5(kv[0].encode()).hexdigest())]
+    (PUBLIC / "papers.json").write_text(json.dumps(plist, separators=(",", ":")))
+    # declared vs undeclared, by company group
+    comp = defaultdict(Counter)
+    for r in rows:
+        if r["channel"] not in ("red", "green", "amber") or not r.get("paid"):
+            continue
+        und = set(r.get("undeclared", []))
+        seen = {}
+        for co in r["paid"]:
+            fam = family(co)
+            st = "undeclared" if co in und else "declared"
+            if seen.get(fam) != "undeclared":
+                seen[fam] = st
+        for fam, st in seen.items():
+            comp[fam][st] += 1
+    top = sorted(comp.items(), key=lambda kv: -(kv[1]["declared"] + kv[1]["undeclared"]))[:14]
+    summary["companies"] = [{"name": f, "declared": v["declared"], "undeclared": v["undeclared"]} for f, v in top]
+    summary["paid_authors"] = {"declared_all": sum(1 for r in rows if r["channel"] == "green" and r.get("paid")),
+                               "missed_some": sum(1 for r in red if r["reason"] != "statement declares no conflicts"),
+                               "said_none": sum(1 for r in red if r["reason"] == "statement declares no conflicts"),
+                               "relevant_only": sum(1 for r in rows if r["channel"] == "amber")}
+    summary["by_year_mix"] = {y: {k2: v[k2] for k2 in ("green", "amber", "red")} for y, v in sorted(yr.items())}
+    (PUBLIC / "cases.json").write_text(json.dumps(cases, separators=(",", ":")))
     (PUBLIC / "summary.json").write_text(json.dumps(summary, indent=1))
     log(f"public: {len(cases)} anonymised red cases, summary {dict(counts)}")
 

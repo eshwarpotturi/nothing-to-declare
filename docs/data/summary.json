@@ -217,6 +217,106 @@
    176
   ]
  ],
- "fees_share": 0.856,
- "blanket_red": 556
+ "fees_share": 0.864,
+ "blanket_red": 556,
+ "companies": [
+  {
+   "name": "AstraZeneca",
+   "declared": 351,
+   "undeclared": 201
+  },
+  {
+   "name": "Johnson & Johnson",
+   "declared": 242,
+   "undeclared": 195
+  },
+  {
+   "name": "Bristol Myers Squibb",
+   "declared": 297,
+   "undeclared": 111
+  },
+  {
+   "name": "Pfizer",
+   "declared": 258,
+   "undeclared": 128
+  },
+  {
+   "name": "Roche",
+   "declared": 215,
+   "undeclared": 133
+  },
+  {
+   "name": "Merck",
+   "declared": 166,
+   "undeclared": 169
+  },
+  {
+   "name": "Amgen",
+   "declared": 200,
+   "undeclared": 115
+  },
+  {
+   "name": "Sanofi",
+   "declared": 170,
+   "undeclared": 143
+  },
+  {
+   "name": "AbbVie",
+   "declared": 230,
+   "undeclared": 83
+  },
+  {
+   "name": "Medtronic",
+   "declared": 110,
+   "undeclared": 200
+  },
+  {
+   "name": "Novartis",
+   "declared": 201,
+   "undeclared": 102
+  },
+  {
+   "name": "Eli Lilly",
+   "declared": 157,
+   "undeclared": 89
+  },
+  {
+   "name": "Abbott",
+   "declared": 116,
+   "undeclared": 112
+  },
+  {
+   "name": "Gilead",
+   "declared": 106,
+   "undeclared": 78
+  }
+ ],
+ "paid_authors": {
+  "declared_all": 480,
+  "missed_some": 1258,
+  "said_none": 556,
+  "relevant_only": 236
+ },
+ "by_year_mix": {
+  "2023": {
+   "green": 521,
+   "amber": 2,
+   "red": 43
+  },
+  "2024": {
+   "green": 3271,
+   "amber": 81,
+   "red": 389
+  },
+  "2025": {
+   "green": 5671,
+   "amber": 89,
+   "red": 786
+  },
+  "2026": {
+   "green": 4139,
+   "amber": 64,
+   "red": 596
+  }
+ }
 }
