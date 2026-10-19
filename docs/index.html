@@ -23,103 +23,123 @@
   --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad2:#a84a42; --bad-bg:#3a1714; --none:#56616d; --none-bg:#232b34;
   --xray:#0b1015; --form:#20242a; --form-line:#4a4436; --shade:rgba(0,0,0,.6); color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:19px;line-height:1.55;min-width:1180px}
-.col{width:1140px;margin:0 auto}
-section{padding-block:56px;border-top:1px solid var(--rule)}
-.kicker{font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:22px;line-height:1.5;min-width:1240px}
+.col{width:min(1440px,95vw);margin:0 auto}
+section{padding-block:30px;border-top:1px solid var(--rule)}
+.kicker{font-family:var(--mono);font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 h1,h2{font-family:var(--serif);font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:0}
-h1{font-size:60px;line-height:1.04}
-h2{font-size:38px;line-height:1.12;max-width:28ch}
+h1{font-size:76px;line-height:1.02}
+h2{font-size:46px;line-height:1.08;max-width:34ch}
 p{margin:0}
-.lede{font-size:21px;color:var(--ink2);max-width:66ch;margin-top:16px}
-.body{color:var(--ink2);max-width:70ch;margin-top:10px}
+.lede{font-size:25px;color:var(--ink2);max-width:75ch;margin-top:10px}
+.body{color:var(--ink2);max-width:90ch;margin-top:8px}
 .red{color:var(--bad)}.grn{color:var(--good)}.amb{color:var(--warn)}
 b.num{font-family:var(--mono);font-weight:500}
-.hint{font-size:14.5px;color:var(--muted);margin-top:10px}
+.hint{font-size:17px;color:var(--muted);margin-top:10px}
 .hint::before{content:"↗ ";}
 button{font:inherit;color:inherit}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding-top:22px}
-.toggle{border:1px solid var(--rule);background:var(--paper);border-radius:99px;padding:5px 14px;font-size:14.5px;cursor:pointer;color:var(--ink2)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding-top:14px}
+.toggle{border:1px solid var(--rule);background:var(--paper);border-radius:99px;padding:6px 16px;font-size:17px;cursor:pointer;color:var(--ink2)}
 .toggle:focus-visible,.clk:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 /* hero */
-.hero{padding-block:22px 48px;border-top:0}
-.hero-grid{display:grid;grid-template-columns:1fr 330px;gap:28px;margin-top:28px;align-items:start}
+.hero{padding-block:10px 30px;border-top:0}
+.hero-grid{display:grid;grid-template-columns:1fr 400px;gap:22px;margin-top:18px;align-items:start}
 .papers{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px}
 .papers canvas{width:100%;display:block;cursor:pointer}
-.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:15.5px;color:var(--ink2)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:18px;color:var(--ink2)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:12px;height:12px;border-radius:2px;display:inline-block}
-.stats{display:grid;gap:12px}
+.legend i{width:14px;height:14px;border-radius:2px;display:inline-block}
+.stats{display:grid;gap:10px}
 .stat{all:unset;box-sizing:border-box;display:block;background:var(--paper);border:1px solid var(--rule);border-left:5px solid var(--c,var(--ink));border-radius:10px;padding:14px 16px;cursor:pointer}
 .stat:hover{background:var(--hover)}
 .stat:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.stat b{display:block;font-family:var(--serif);font-weight:800;font-size:40px;line-height:1.05;color:var(--c,var(--ink))}
-.stat span{font-size:16px;color:var(--ink2)}
+.stat b{display:block;font-family:var(--serif);font-weight:800;font-size:48px;line-height:1.05;color:var(--c,var(--ink))}
+.stat span{font-size:19px;color:var(--ink2);line-height:1.35;display:block}
 /* case */
-.case{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin-top:24px;align-items:stretch}
+.case{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;margin-top:16px;align-items:stretch}
 .case.tight{grid-template-columns:1fr 1fr;margin-top:0}
-.form{background:var(--form);border:1px solid var(--form-line);border-radius:8px;padding:20px;font-family:var(--mono);font-size:15px;display:grid;gap:10px;align-content:start}
-.ft{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:8px}
-.stamp{font-family:var(--serif);font-size:26px;font-weight:800;color:var(--good);border:3px solid var(--good);border-radius:6px;padding:4px 12px;justify-self:start;transform:rotate(-3deg);margin-top:6px}
+.form{background:var(--form);border:1px solid var(--form-line);border-radius:8px;padding:20px;font-family:var(--mono);font-size:18px;display:grid;gap:10px;align-content:start}
+.ft{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:8px}
+.stamp{font-family:var(--serif);font-size:30px;font-weight:800;color:var(--good);border:3px solid var(--good);border-radius:6px;padding:4px 12px;justify-self:start;transform:rotate(-3deg);margin-top:6px}
 .vs{align-self:center;font-family:var(--serif);font-size:24px;color:var(--muted)}
-.xray{background:var(--xray);color:var(--xray-ink);border-radius:8px;padding:20px;font-family:var(--mono);font-size:15px;display:grid;gap:10px;align-content:start}
+.xray{background:var(--xray);color:var(--xray-ink);border-radius:8px;padding:20px;font-family:var(--mono);font-size:18px;display:grid;gap:10px;align-content:start}
 .xray .ft{color:var(--xray-dim);border-bottom-color:#33414f}
 .pay{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;border:1px solid #ff8a80;box-shadow:inset 3px 0 0 #ff8a80;border-radius:4px;padding:8px 10px}
 .pay b{color:#fff;font-weight:500;overflow-wrap:anywhere}.pay em{font-style:normal;color:var(--gold)}
-.pay small{grid-column:1/-1;color:var(--xray-dim);font-size:12.5px}
+.pay small{grid-column:1/-1;color:var(--xray-dim);font-size:15px}
 .pay.total{border-color:#33414f;box-shadow:none}
-.verdict{margin-top:14px;border-radius:6px;padding:14px 18px;font-size:17.5px;background:var(--bad-bg);border-left:5px solid var(--bad)}
+.verdict{margin-top:12px;border-radius:6px;padding:12px 18px;font-size:21px;background:var(--bad-bg);border-left:5px solid var(--bad)}
 .verdict.g{background:var(--good-bg);border-left-color:var(--good)}
 /* charts */
-.chart{margin-top:24px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:22px 24px 16px}
+.chart{margin-top:14px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:16px 20px 12px}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
-.chart svg text{font-family:var(--sans);fill:var(--ink2);font-size:15px}
+.chart svg text{font-family:var(--sans);fill:var(--ink2);font-size:17px}
 .chart svg .lab{fill:var(--ink);font-weight:600}
-.chart svg .val{font-family:var(--mono);font-size:13.5px;fill:var(--ink2)}
-.chart svg .on{fill:#fff;font-family:var(--mono);font-size:13.5px;font-weight:500}
-.chart svg .note{fill:var(--ink);font-size:16px;font-weight:600}
+.chart svg .val{font-family:var(--mono);font-size:15.5px;fill:var(--ink2)}
+.chart svg .on{fill:#fff;font-family:var(--mono);font-size:16px;font-weight:500}
+.chart svg .note{fill:var(--ink);font-size:18px;font-weight:600}
 .chart svg .axis{stroke:var(--rule)}
 .chart svg .clk{cursor:pointer}
 .chart svg .clk:hover rect,.chart svg circle.clk:hover{filter:brightness(1.12)}
 .chart svg .row:hover .hov{fill:var(--hover)}
-.cap{font-size:15px;color:var(--muted);margin-top:10px}
+.cap{font-size:17px;color:var(--muted);margin-top:6px}
+.read{font-size:20px;color:var(--ink2);max-width:100ch;margin-top:8px}
+.read b{color:var(--ink)}
+.tip{position:fixed;pointer-events:none;z-index:60;background:var(--paper);border:1px solid var(--rule);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 14px;font-size:17px;max-width:360px;line-height:1.35}
+.tip b{font-family:var(--serif);font-size:20px;display:block;margin-bottom:2px}
+.tip small{color:var(--muted);display:block;margin-top:4px;font-size:15px}
 /* split bar */
-.splitbar{display:flex;height:64px;border-radius:8px;overflow:hidden;margin-top:24px;gap:2px}
-.splitbar button{all:unset;cursor:pointer;display:flex;flex-direction:column;justify-content:center;padding:0 14px;color:#fff;font-size:15px;line-height:1.25;min-width:0;white-space:nowrap;overflow:hidden}
-.splitbar button b{font-family:var(--mono);font-size:19px;font-weight:500}
+.splitbar{display:flex;height:84px;border-radius:8px;overflow:hidden;margin-top:14px;gap:2px}
+.splitbar button{all:unset;cursor:pointer;display:flex;flex-direction:column;justify-content:center;padding:0 16px;color:#fff;font-size:18px;line-height:1.25;min-width:0;white-space:nowrap;overflow:hidden}
+.splitbar button b{font-family:var(--mono);font-size:24px;font-weight:500}
 .splitbar button:hover{filter:brightness(1.1)}
 .splitbar button:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 /* actions */
-.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
 .act{background:var(--paper);border:1px solid var(--rule);border-top:5px solid var(--good);border-radius:10px;padding:18px 20px}
-.act b{font-family:var(--serif);font-size:23px;display:block;margin-bottom:4px}
-.act p{color:var(--ink2);font-size:17px}
-.browse{margin-top:22px;border:1px solid var(--rule);background:var(--paper);border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
+.act b{font-family:var(--serif);font-size:27px;display:block;margin-bottom:4px}
+.act p{color:var(--ink2);font-size:20px}
+.browse{margin-top:16px;font-size:19px;border:1px solid var(--rule);background:var(--paper);border-radius:8px;padding:10px 18px;font-weight:600;cursor:pointer}
 .browse:hover{background:var(--hover)}
-.method{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:22px}
-.method div{border-top:2px solid var(--ink);padding-top:8px;font-size:16.5px;color:var(--ink2)}
-.method b{display:block;color:var(--ink);font-size:17.5px}
-.fine{font-size:15.5px;color:var(--muted);max-width:86ch;margin-top:18px}
-footer{padding-block:28px 56px;font-size:15px;color:var(--muted)}
+.method{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
+.method div{border-top:2px solid var(--ink);padding-top:8px;font-size:19px;color:var(--ink2)}
+.method b{display:block;color:var(--ink);font-size:21px}
+.fine{font-size:18px;color:var(--muted);max-width:110ch;margin-top:12px}
+footer{padding-block:18px 36px;font-size:17px;color:var(--muted)}
+/* explorer */
+.explorer{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:18px;margin-top:14px;align-items:start}
+.queue{background:var(--paper);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.controls{display:flex;flex-wrap:wrap;gap:8px 14px;padding:12px 14px;border-bottom:1px solid var(--rule);font-size:17px;color:var(--ink2);align-items:center}
+.controls label{display:inline-flex;gap:6px;align-items:center}
+select{font:inherit;font-size:17px;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:4px;padding:3px 6px;max-width:220px}
+.count{font-family:var(--mono);font-size:15px;color:var(--muted);width:100%}
+ul.list{list-style:none;margin:0;padding:0;max-height:640px;overflow-y:auto}
+.list button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:19px}
+.list button:hover,.list button[aria-current="true"]{background:var(--hover)}
+.list button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.list i{align-self:stretch;border-radius:3px}
+.list small{display:block;color:var(--muted);font-size:16px}
+.list .amt{font-family:var(--mono);font-size:17px}
+.list .more{all:unset;display:block;text-align:center;padding:10px;font-weight:600;cursor:pointer}
 /* modal */
 .shade{position:fixed;inset:0;background:var(--shade);display:grid;place-items:center;z-index:50}
-.modal{width:min(980px,92vw);max-height:88vh;overflow:auto;background:var(--bg);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:26px 28px 24px;position:relative}
-.modal h3{font-family:var(--serif);font-size:30px;margin:0 0 4px;font-weight:800;padding-right:40px}
+.modal{width:min(1180px,92vw);max-height:88vh;overflow:auto;background:var(--bg);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:26px 28px 24px;position:relative}
+.modal h3{font-family:var(--serif);font-size:36px;margin:0 0 4px;font-weight:800;padding-right:40px}
 .modal .sub{color:var(--ink2);margin-bottom:16px}
 .close{position:absolute;top:16px;right:18px;border:1px solid var(--rule);background:var(--paper);border-radius:99px;width:36px;height:36px;font-size:20px;cursor:pointer;line-height:1}
 .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .mgrid div{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 14px}
-.mgrid b{display:block;font-family:var(--serif);font-size:28px}
-.mgrid span{font-size:15px;color:var(--ink2)}
+.mgrid b{display:block;font-family:var(--serif);font-size:32px}
+.mgrid span{font-size:17px;color:var(--ink2)}
 ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper)}
-.mlist button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:6px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:16.5px}
+.mlist button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:6px 1fr auto;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:19.5px}
 .mlist button:hover{background:var(--hover)}
 .mlist button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .mlist i{align-self:stretch;border-radius:3px}
-.mlist small{display:block;color:var(--muted);font-size:14px}
-.mlist .amt{font-family:var(--mono);font-size:14.5px}
+.mlist small{display:block;color:var(--muted);font-size:16px}
+.mlist .amt{font-family:var(--mono);font-size:17px}
 .back{border:0;background:none;color:var(--ink2);cursor:pointer;padding:0;margin-bottom:10px;font-size:15.5px}
-.letter{margin-top:14px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 18px;font-size:16.5px;color:var(--ink2)}
+.letter{margin-top:12px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px 18px;font-size:19px;color:var(--ink2)}
 .letter b{color:var(--ink)}
 </style>
 </head>
@@ -153,6 +173,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <h2>Of the authors who were paid by industry, few declared everything.</h2>
     <p class="body" id="declText"></p>
     <div class="splitbar" id="declbar"></div>
+    <p class="read"><b>How to read:</b> the bar is every checked author whom companies reported paying. Green named every company. The two reds left at least one out. <b>For a publisher</b>, the darkest red is the cheapest win: a paper that says "no conflicts" while the record shows payments needs no judgement, only a query.</p>
     <p class="hint">Click a segment to see those authors.</p>
   </section>
 
@@ -160,6 +181,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <p class="kicker">How much</p>
     <h2>This is mostly real money, not free lunches.</h2>
     <p class="body" id="amountText"></p>
+    <p class="read"><b>How to read:</b> each dot is one flagged author; further right means more undeclared money. <b>For a publisher</b>, everything right of the dashed line is a five-figure relationship readers never saw.</p>
     <div class="chart"><svg id="swarm" viewBox="0 0 1090 400" role="img" aria-label="Each flagged author as a dot on a dollar scale"></svg>
       <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the three years before publication (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts. Click a dot to open the case.</p></div>
   </section>
@@ -167,6 +189,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
   <section>
     <p class="kicker">Where</p>
     <h2>In every specialty most authors are clean, but the red share varies seven-fold.</h2>
+    <p class="read"><b>How to read:</b> each bar is one specialty's checked authors, red share on the left, green on the right. <b>For a publisher</b>, this says where to start: the top three specialties would catch the most gaps per paper checked.</p>
     <div class="chart"><svg id="fields" viewBox="0 0 1090 470" role="img" aria-label="Share of checked authors green, amber and red, by specialty"></svg>
       <p class="cap">Share of checked US authors in each field. Green: declaration matches the record. Amber: declared only "no relevant" conflicts. Red: undeclared payments. Click a field for its cases.</p></div>
   </section>
@@ -174,6 +197,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
   <section>
     <p class="kicker">Who pays</p>
     <h2>Some companies' money gets declared. Others' mostly doesn't.</h2>
+    <p class="read"><b>How to read:</b> left is authors whose paper declared that company, right is authors whose paper did not. Longer red than green means the company's money is more often hidden than shown. <b>For a publisher</b>, the company most often left out is a device maker, so checks should not stop at drug companies.</p>
     <div class="chart"><svg id="companies" viewBox="0 0 1090 560" role="img" aria-label="Authors paid by each company, declared versus not declared"></svg>
       <p class="cap">Checked authors with significant payments from each corporate group, split by whether their paper declared that company. Click a company for its undeclared cases.</p></div>
   </section>
@@ -182,6 +206,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <p class="kicker">Trend</p>
     <h2>The red slice has grown with every year of papers.</h2>
     <p class="body" id="trendText"></p>
+    <p class="read"><b>How to read:</b> each column is one publication year's checked authors. <b>For a publisher</b>, waiting is not a strategy: the gap is wider in the newest papers.</p>
     <div class="chart"><svg id="trend" viewBox="0 0 1090 330" role="img" aria-label="Share of checked authors by status and publication year"></svg>
       <p class="cap">2023 covers October to December only. Older papers look back at earlier payment years, so part of the rise may reflect the data, not behaviour. Click a year for its cases.</p></div>
   </section>
@@ -194,7 +219,25 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
       <div class="act"><b>Ask, don't accuse</b><p>Send the author the evidence with a polite query. Most gaps are omissions, fixed with one updated line.</p></div>
       <div class="act"><b>Publish with confidence</b><p>Readers, reviewers and regulators trust disclosures that have been checked. That is a quality mark competitors don't have.</p></div>
     </div>
-    <button class="browse" id="browseAll">Browse all flagged authors</button>
+  </section>
+
+  <section>
+    <p class="kicker">Explore</p>
+    <h2>Walk through the red channel yourself.</h2>
+    <div class="explorer">
+      <div class="queue">
+        <div class="controls">
+          <label for="f-field">Field <select id="f-field"><option value="">All</option></select></label>
+          <label for="f-co">Company <select id="f-co"><option value="">All</option></select></label>
+          <label for="f-ch">Channel <select id="f-ch"><option value="">Red and amber</option><option value="red">Red only</option><option value="amber">Amber only</option></select></label>
+          <label for="f-min">At least <select id="f-min"><option value="0">any</option><option value="5000" selected>$5k</option><option value="10000">$10k</option><option value="50000">$50k</option></select></label>
+          <label for="f-sort">Sort <select id="f-sort"><option value="usd">Largest</option><option value="year">Newest</option></select></label>
+          <span class="count" id="qcount"></span>
+        </div>
+        <ul class="list" id="xlist"></ul>
+      </div>
+      <div id="xdesk"></div>
+    </div>
   </section>
 
   <section>
@@ -223,6 +266,8 @@ const nice=s=>s.split(/(\s+)/).map(w=>{const t=w.replace(/[^A-Za-z]/g,"");if(!t)
 const ptype=t=>t.startsWith("Other")?"Other payments (e.g. royalties)":t.replace(/ \(speaker\/faculty\)/,"").replace("Compensation for services other than consulting","Speaker / faculty fees");
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const amt=c=>c.banded?k(c.usd)+"+":k(c.usd);
+const fams=c=>[...new Set(c.items.map(i=>i.fam))];
+const famTxt=(c,n)=>{const f=fams(c);return f.slice(0,n).map(esc).join(", ")+(f.length>n?" +"+(f.length-n):"")};
 let S,C,P,byId={};
 
 /* ---------- theme (light by default) ---------- */
@@ -260,7 +305,7 @@ function caseView(c,back){
 function listView(title,sub,cases,stats){
   const rows=cases.slice().sort((a,b)=>b.usd-a.usd).slice(0,200);
   const html=()=>`<h3>${esc(title)}</h3><p class="sub">${sub}</p>${stats||""}
-   <ul class="mlist">${rows.map(c=>`<li><button data-id="${c.id}"><i style="background:var(${c.ch==="amber"?"--warn":"--bad"})"></i><span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${c.items.map(i=>esc(i.fam)).slice(0,4).join(", ")}${c.items.length>4?" +"+(c.items.length-4):""}</small></span><span class="amt">${amt(c)}</span></button></li>`).join("")}</ul>
+   <ul class="mlist">${rows.map(c=>`<li><button data-id="${c.id}"><i style="background:var(${c.ch==="amber"?"--warn":"--bad"})"></i><span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${famTxt(c,4)}</small></span><span class="amt">${amt(c)}</span></button></li>`).join("")}</ul>
    ${cases.length>200?`<p class="hint">Showing the 200 largest of ${cases.length.toLocaleString()}.</p>`:""}`;
   const wire=()=>$("mbody").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{setModal(caseView(byId[b.dataset.id],true));$("mback").onclick=()=>{setModal(html());wire()}});
   openModal(html());wire();
@@ -274,7 +319,7 @@ let gridLayout=null;
 function drawGrid(){
   const cv=$("grid"),w=cv.clientWidth,dpr=window.devicePixelRatio||1;
   const sorted=["red","amber","green","grey"].flatMap(s=>P.filter(p=>p.s===s));
-  const cell=9,gap=2,cols=Math.floor((w+gap)/(cell+gap)),rows=Math.ceil(sorted.length/cols);
+  const cell=12,gap=3,cols=Math.floor((w+gap)/(cell+gap)),rows=Math.ceil(sorted.length/cols);
   cv.style.height=rows*(cell+gap)+"px";cv.width=w*dpr;cv.height=rows*(cell+gap)*dpr;
   const g=cv.getContext("2d");g.scale(dpr,dpr);const col={red:css("--bad"),amber:css("--warn"),green:css("--good"),grey:css("--none")};
   sorted.forEach((p,i)=>{g.fillStyle=col[p.s];const x=(i%cols)*(cell+gap),y=Math.floor(i/cols)*(cell+gap);g.beginPath();g.roundRect?g.roundRect(x,y,cell,cell,2):g.rect(x,y,cell,cell);g.fill()});
@@ -323,7 +368,7 @@ function declare(){
 
 /* ---------- beeswarm of amounts ---------- */
 function swarm(){
-  const svg=$("swarm"),W=1090,L=40,R=30,mid=215,r=2.9,lo=Math.log10(1000),hi=Math.log10(5e6),X=v=>L+(W-L-R)*(Math.log10(Math.max(1000,v))-lo)/(hi-lo);
+  const svg=$("swarm"),W=1090,L=40,R=30,mid=215,r=3.1,lo=Math.log10(1000),hi=Math.log10(5e6),X=v=>L+(W-L-R)*(Math.log10(Math.max(1000,v))-lo)/(hi-lo);
   const jit=id=>{let h=2166136261;for(const ch of id){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1274126177);return ((h>>>0)%10000)/10000-.5};
   const pts=C.map(c=>({c,x:X(c.banded?c.usd*(1+.6*(jit(c.id)+.5)):(c.usd<=1000?1000+600*(jit(c.id)+.5):c.usd+1000*jit(c.id)))})).sort((a,b)=>a.x-b.x),placed=[];
   for(const p of pts){let step=0;for(;;){const yy=mid+(step%2?1:-1)*Math.ceil(step/2)*(2*r+.6);if(!placed.some(q=>Math.abs(q.x-p.x)<2*r+.4&&Math.abs(q.y-yy)<2*r+.4)){p.y=yy;break}step++;if(step>90){p.y=mid;break}}placed.push(p)}
@@ -331,7 +376,7 @@ function swarm(){
   svg.innerHTML=ticks.map(t=>`<line class="axis" x1="${X(t)}" x2="${X(t)}" y1="48" y2="372"/><text x="${X(t)}" y="394" text-anchor="middle" class="val">${k(t)}</text>`).join("")
    +`<line x1="${X(med)}" x2="${X(med)}" y1="34" y2="372" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 4"/><text x="${X(med)+8}" y="30" class="note">Median ${k(med)} (${inr(med)})</text>`
    +`<text x="${X(1e5)+8}" y="30" class="note">${S.amount_bins[5][1]} authors over $100k</text>`
-   +placed.map(p=>`<circle class="clk" data-id="${p.c.id}" cx="${p.x.toFixed(1)}" cy="${Math.max(46,Math.min(370,p.y)).toFixed(1)}" r="${r}" fill="var(${p.c.ch==="amber"?"--warn":"--bad"})" opacity=".85"><title>${esc(p.c.specialty)}, ${amt(p.c)}</title></circle>`).join("");
+   +placed.map(p=>`<circle class="clk" data-id="${p.c.id}" cx="${p.x.toFixed(1)}" cy="${Math.max(46,Math.min(370,p.y)).toFixed(1)}" r="${r}" fill="var(${p.c.ch==="amber"?"--warn":"--bad"})" opacity=".85"/>`).join("");
   svg.onclick=e=>{const id=e.target.dataset&&e.target.dataset.id;if(id)openModal(caseView(byId[id],false))};
   const over10=S.amount_bins.slice(3).reduce((a,b)=>a+b[1],0),tot=S.amount_bins.reduce((a,b)=>a+b[1],0);
   $("amountText").innerHTML=`Half of the flagged authors received more than <b class="num">${k(S.median_usd)}</b> (${inr(S.median_usd)}) that their paper never mentioned, and <b>${pct(over10/tot)}</b> more than $10k. <b>${pct(S.fees_share)}</b> were paid consulting, speaker or other fees, the kind of relationship journals ask authors to declare.`;
@@ -388,9 +433,38 @@ function trend(){
   $("trendText").innerHTML=`Most authors stay green every year. But the red share went from <b class="num">${(100*ra).toFixed(1)}%</b> of checked authors on ${a[0]} papers to <b class="num">${(100*rz).toFixed(1)}%</b> on ${z[0]} papers. Disclosure rules have not closed the gap.`;
 }
 
-$("browseAll").onclick=()=>listView("All flagged authors",`${C.length.toLocaleString()} authors in the red or amber channel.`,C,miniStats(C));
+/* ---------- hover cards ---------- */
+const tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
+function showTip(e,html){tip.innerHTML=html;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+16;if(x+w>innerWidth-8)x=e.clientX-w-16;if(y+h>innerHeight-8)y=e.clientY-h-16;tip.style.left=x+"px";tip.style.top=y+"px"}
+function hideTip(){tip.hidden=true}
+function caseTip(c){return `<b>${esc(c.specialty)} · US ${esc(c.region)}</b>${esc(c.field)} paper, ${c.year}<br>Undeclared: <strong>${c.banded?"at least "+k(c.usd):k(c.usd)+" ("+inr(c.usd)+")"}</strong><br>${famTxt(c,3)}<small>Click to open the case</small>`}
+function wireTips(){
+  $("swarm").addEventListener("mousemove",e=>{const id=e.target.dataset&&e.target.dataset.id;id?showTip(e,caseTip(byId[id])):hideTip()});$("swarm").addEventListener("mouseleave",hideTip);
+  $("grid").addEventListener("mousemove",e=>{if(!gridLayout)return;const r=e.target.getBoundingClientRect(),{sorted,cols,cell,gap}=gridLayout,i=Math.floor((e.clientY-r.top)/(cell+gap))*cols+Math.floor((e.clientX-r.left)/(cell+gap)),p=sorted[i];if(!p){hideTip();return}
+    const lab={red:"Undeclared payments",amber:'Declared only "no relevant" conflicts',green:"Declaration matches the record",grey:"No US author could be checked"}[p.s];
+    showTip(e,`<b>${esc(p.f)} paper, ${p.y}</b>${lab}<br>${p.n} US author${p.n===1?"":"s"} checked${p.c.length?` · ${p.c.length} flagged`:""}<small>Click to open</small>`)});
+  $("grid").addEventListener("mouseleave",hideTip);
+  document.querySelectorAll("svg title").forEach(t=>{const g=t.parentNode,txt=t.textContent;t.remove();g.addEventListener("mousemove",e=>showTip(e,`<b>${esc(txt.split(":")[0])}</b>${esc(txt.split(":").slice(1).join(":"))}<small>Click for the cases</small>`));g.addEventListener("mouseleave",hideTip)});
+}
+
+/* ---------- explorer ---------- */
+let xshown=30,xcur=null;
+function xfiltered(){const f=$("f-field").value,co=$("f-co").value,ch=$("f-ch").value,m=+$("f-min").value,s=$("f-sort").value;
+  return C.filter(c=>(!f||c.field===f)&&(!co||c.items.some(i=>i.fam===co))&&(!ch||c.ch===ch)&&c.usd>=m).sort(s==="usd"?(a,b)=>b.usd-a.usd:(a,b)=>b.year-a.year||b.usd-a.usd)}
+function xlist(){const all=xfiltered(),ul=$("xlist");$("qcount").textContent=`${all.length.toLocaleString()} flagged authors match`;
+  if(!xcur||!all.includes(xcur))xcur=all[0]||null;ul.innerHTML="";
+  all.slice(0,xshown).forEach(c=>{const li=document.createElement("li"),b=document.createElement("button");b.id="x-"+c.id;b.setAttribute("aria-current",c===xcur);
+    b.innerHTML=`<i style="background:var(${c.ch==="amber"?"--warn":"--bad"})"></i><span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${famTxt(c,3)}</small></span><span class="amt">${amt(c)}</span>`;
+    b.onclick=()=>{xcur=c;xlist()};li.appendChild(b);ul.appendChild(li)});
+  if(all.length>xshown){const li=document.createElement("li"),m=document.createElement("button");m.className="more";m.id="xmore";m.textContent=`Show more (${(all.length-xshown).toLocaleString()} left)`;m.onclick=()=>{xshown+=30;xlist()};li.appendChild(m);ul.appendChild(li)}
+  $("xdesk").innerHTML=xcur?caseView(xcur,false).replace(/<h3>/,'<h3 style="font-family:var(--serif);font-size:32px;margin:0 0 4px">').replace('<p class="sub">','<p class="body" style="margin:0 0 12px">'):`<p class="body">No flagged authors match these filters.</p>`}
+function explorer(){
+  [...new Set(C.map(x=>x.field))].sort().forEach(f=>$("f-field").add(new Option(f,f)));
+  const fc={};C.forEach(c=>c.items.forEach(i=>fc[i.fam]=(fc[i.fam]||0)+1));Object.entries(fc).sort((a,b)=>b[1]-a[1]).slice(0,40).map(x=>x[0]).sort().forEach(f=>$("f-co").add(new Option(f,f)));
+  ["f-field","f-co","f-ch","f-min","f-sort"].forEach(id=>$(id).addEventListener("change",()=>{xshown=30;xcur=null;xlist()}));xlist();
+}
 Promise.all(["summary","cases","papers"].map(n=>fetch(`data/${n}.json`).then(r=>r.json()))).then(([s,c,p])=>{S=s;C=c;P=p;C.forEach(x=>byId[x.id]=x);
-  drawGrid();hero();declare();swarm();fields();companies();trend();
+  drawGrid();hero();declare();swarm();fields();companies();trend();explorer();wireTips();
   let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(drawGrid,150)});
 }).catch(()=>{$("stats").innerHTML='<p class="body">Could not load the results. Reload the page to try again.</p>'});
 </script>
