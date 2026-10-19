@@ -41,8 +41,11 @@ def get(url, params=None, as_json=True, retries=4):
     key = hashlib.sha1((url + json.dumps(params, sort_keys=True)).encode()).hexdigest()
     path = CACHE / key[:2] / (key + (".json" if as_json else ".txt"))
     if path.exists():
-        txt = path.read_text(encoding="utf-8")
-        return json.loads(txt) if as_json else txt
+        try:
+            txt = path.read_text(encoding="utf-8")
+            return json.loads(txt) if as_json else txt
+        except (UnicodeDecodeError, ValueError):
+            path.unlink()  # unreadable or half-written cache file: fetch it again
     for attempt in range(retries):
         try:
             r = _session.get(url, params=params, timeout=120)
