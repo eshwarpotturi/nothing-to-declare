@@ -161,11 +161,12 @@ details.letter p{margin:10px 0 0;max-width:68ch}
     <div><b>Channel</b><p>Red when a paying company, or its corporate group, is missing from the declaration. Partial declarations are read by an AI model.</p></div>
   </section>
 
-  <p class="foot">A red channel is a question for an editor, not a finding of misconduct. Journal policies differ on which relationships must be declared; some payments may have been disclosed to the editor but not printed. Only US clinicians are covered by the payment record, so non-US authors are not checked. Authors are anonymised: specialty and US region only, amounts rounded to the nearest $1,000. Payment data: CMS Open Payments, program years 2020–2025. A hand check of 20 random red cases found about 9 in 10 correct.</p>
+  <p class="foot">A red channel is a question for an editor, not a finding of misconduct. Journal policies differ on which relationships must be declared; some payments may have been disclosed to the editor but not printed. Only US clinicians are covered by the payment record, so non-US authors are not checked. Authors are anonymised: specialty and US region only, amounts rounded to the nearest $1,000, and amounts over $100,000 shown only as a band. Payment data: CMS Open Payments, program years 2020–2025. A hand check of 20 random red cases found about 9 in 10 correct.</p>
 </div>
 
 <script>
 const fmt=n=>"$"+Math.round(n).toLocaleString("en-US");
+const camt=c=>c.banded?fmt(c.usd)+"+":fmt(c.usd);
 const inr=n=>{const v=n*100; return v>=1e7?"₹"+(v/1e7).toFixed(1)+" crore":"₹"+(v/1e5).toFixed(1)+" lakh"};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const title=s=>s.toLowerCase().replace(/\b([a-z])/g,m=>m.toUpperCase()).replace(/\b(Inc|Llc|Lp|L\.l\.c|Us|Usa|Uk)\b\.?/gi,m=>m.toUpperCase().replace("L.L.C","LLC"));
@@ -203,7 +204,7 @@ function list(){
   if(!current||!all.includes(current)) current=all[0]||null;
   ul.innerHTML="";
   all.slice(0,shown).forEach(c=>{const li=document.createElement("li");const b=document.createElement("button");b.id="case-"+c.id;b.setAttribute("aria-current",c===current);
-    b.innerHTML=`<span class="lane"></span><span class="pt"><b>${esc(c.specialty)} · ${esc(c.region)}</b><small>${esc(c.field)} paper · ${c.year} · ${c.items.length} undeclared payer${c.items.length>1?"s":""}</small></span><span class="amt">${fmt(c.usd)}</span>`;
+    b.innerHTML=`<span class="lane"></span><span class="pt"><b>${esc(c.specialty)} · ${esc(c.region)}</b><small>${esc(c.field)} paper · ${c.year} · ${c.items.length} undeclared payer${c.items.length>1?"s":""}</small></span><span class="amt">${camt(c)}</span>`;
     b.onclick=()=>{current=c;list();desk()};li.appendChild(b);ul.appendChild(li)});
   if(all.length>shown){const li=document.createElement("li");const m=document.createElement("button");m.className="more";m.id="more";m.textContent=`Show ${Math.min(40,all.length-shown)} more`;m.onclick=()=>{shown+=40;list()};li.appendChild(m);ul.appendChild(li)}
   desk();
@@ -223,8 +224,8 @@ function desk(){
       <div class="row"><span>Conflicts</span><div class="box"><i>${blanket?"✓":"~"}</i><span>${form}</span></div></div>
     </div>
     <div class="xray"><div class="ft">X-ray · reported by companies, 3 years before</div>
-      ${c.items.map(i=>`<div class="item"><b>${esc(title(i.company))}</b><em>${fmt(i.usd)}</em><small>${i.types.map(esc).join(" · ")}</small></div>`).join("")}
-      <div class="item total"><b>Undeclared, total</b><em>${fmt(c.usd)} ≈ ${inr(c.usd)}</em></div>
+      ${c.items.map(i=>`<div class="item"><b>${esc(title(i.company))}</b><em>${i.band||fmt(i.usd)}</em><small>${i.types.map(esc).join(" · ")}</small></div>`).join("")}
+      <div class="item total"><b>Undeclared, total</b><em>${c.banded?"at least "+fmt(c.usd):fmt(c.usd)+" ≈ "+inr(c.usd)}</em></div>
     </div>
   </div>
   <div class="verdict"><b>Send to editor</b><span>${blanket?"The paper declares no conflicts, but the public record shows payments from ":"The declaration lists other relationships but not "}${esc(cos.join(", "))}.</span></div>

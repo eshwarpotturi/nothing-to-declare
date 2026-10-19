@@ -16,6 +16,15 @@ def rnd(x, step):
     return max(step, int(round(x / step)) * step)
 
 
+def band(x):
+    """Large amounts are shown as bands so individual doctors are harder to trace."""
+    if x >= 1_000_000:
+        return 1_000_000, "$1M+"
+    if x >= 100_000:
+        return 100_000, "$100k+"
+    return None, None
+
+
 def main():
     c = cfg()
     step = c["publish"]["round_usd_to"]
@@ -27,13 +36,18 @@ def main():
         items = []
         for co in r["undeclared"]:
             v = r["paid"][co]
-            items.append({"company": co, "usd": rnd(v["total"], step),
-                          "types": sorted(v["types"], key=lambda t: -v["types"][t])})
+            floor, label = band(v["total"])
+            item = {"company": co, "usd": floor or rnd(v["total"], step),
+                    "types": sorted(v["types"], key=lambda t: -v["types"][t])}
+            if label:
+                item["band"] = label
+            items.append(item)
         fee_types = ("Consulting", "Compensation", "Honoraria", "Grant", "Royalty")
         fees = any(t.startswith(fee_types) for x in items for t in x["types"])
         cases.append({"id": f"C{i:04d}", "field": r["field"], "year": int(r["date"][:4]), "fees": fees,
                       "specialty": r.get("specialty") or "Clinician", "region": REGION.get(r["state"], "US"),
-                      "reason": r["reason"], "items": items, "usd": sum(x["usd"] for x in items)})
+                      "reason": r["reason"], "items": items, "usd": sum(x["usd"] for x in items),
+                      "banded": any("band" in x for x in items)})
 
     counts = Counter(r["channel"] for r in rows)
     by_field = defaultdict(lambda: Counter())

@@ -42,7 +42,7 @@ All settings (dates, look-back, thresholds, matching, model) live in `config.yam
 
 ## Privacy
 
-The public data contains no names, papers or journals. Authors are shown by specialty and US region, with amounts rounded to the nearest $1,000. The un-anonymised results, the journal list, caches and API keys stay in `private/`, which is not committed.
+The public data contains no names, papers or journals. Authors are shown by specialty and US region, with amounts rounded to the nearest $1,000 and amounts over $100,000 shown only as bands ($100k+, $1M+). The un-anonymised results, the journal list, caches and API keys stay in `private/`, which is not committed.
 
 ## Requirements
 
