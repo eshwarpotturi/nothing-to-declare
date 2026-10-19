@@ -1,0 +1,169 @@
+{
+ "papers": 2878,
+ "authors": 20107,
+ "channels": {
+  "unclear": 889,
+  "green": 13602,
+  "red": 1814,
+  "amber": 236,
+  "not_checkable": 3217,
+  "no_statement": 349
+ },
+ "red_papers": 967,
+ "period": "2023-10 to 2026-10",
+ "by_field": {
+  "Cardiology": {
+   "unclear": 189,
+   "green": 2689,
+   "red": 403,
+   "amber": 54,
+   "not_checkable": 2743,
+   "no_statement": 12
+  },
+  "Clinical pharmacology": {
+   "not_checkable": 233,
+   "green": 1669,
+   "red": 57,
+   "unclear": 78,
+   "amber": 5,
+   "no_statement": 5
+  },
+  "Dermatology": {
+   "green": 324,
+   "red": 36,
+   "unclear": 30,
+   "amber": 1,
+   "not_checkable": 1
+  },
+  "Diabetes and obesity": {
+   "green": 350,
+   "not_checkable": 2,
+   "red": 28,
+   "unclear": 24,
+   "no_statement": 4,
+   "amber": 4
+  },
+  "Endocrinology": {
+   "green": 155,
+   "amber": 6,
+   "no_statement": 2,
+   "red": 17,
+   "unclear": 5,
+   "not_checkable": 3
+  },
+  "Gastroenterology": {
+   "green": 593,
+   "red": 85,
+   "unclear": 49,
+   "not_checkable": 9,
+   "no_statement": 59,
+   "amber": 4
+  },
+  "Head and neck surgery": {
+   "no_statement": 22,
+   "green": 185,
+   "red": 53,
+   "unclear": 12,
+   "amber": 5
+  },
+  "Hematology": {
+   "green": 380,
+   "red": 127,
+   "unclear": 15,
+   "amber": 8,
+   "not_checkable": 2,
+   "no_statement": 1
+  },
+  "Internal medicine": {
+   "green": 14,
+   "unclear": 1,
+   "red": 1
+  },
+  "Neurology": {
+   "green": 2385,
+   "red": 403,
+   "unclear": 139,
+   "not_checkable": 155,
+   "amber": 43,
+   "no_statement": 112
+  },
+  "Oncology": {
+   "green": 3267,
+   "red": 378,
+   "unclear": 213,
+   "amber": 97,
+   "not_checkable": 35,
+   "no_statement": 46
+  },
+  "Otolaryngology": {
+   "green": 1591,
+   "unclear": 134,
+   "red": 226,
+   "not_checkable": 24,
+   "no_statement": 70,
+   "amber": 9
+  },
+  "Rheumatology": {
+   "no_statement": 16,
+   "not_checkable": 10
+  }
+ },
+ "by_year": {
+  "2023": 43,
+  "2024": 389,
+  "2025": 786,
+  "2026": 596
+ },
+ "top_companies": [
+  [
+   "MEDTRONIC, INC.",
+   184
+  ],
+  [
+   "MERCK SHARP & DOHME LLC",
+   138
+  ],
+  [
+   "ASTRAZENECA PHARMACEUTICALS LP",
+   115
+  ],
+  [
+   "ABBOTT LABORATORIES",
+   104
+  ],
+  [
+   "PFIZER INC.",
+   98
+  ],
+  [
+   "BOSTON SCIENTIFIC CORPORATION",
+   85
+  ],
+  [
+   "E.R. SQUIBB & SONS, L.L.C.",
+   85
+  ],
+  [
+   "NOVARTIS PHARMACEUTICALS CORPORATION",
+   84
+  ],
+  [
+   "GENZYME CORPORATION",
+   84
+  ],
+  [
+   "AMGEN INC.",
+   81
+  ],
+  [
+   "INTUITIVE SURGICAL, INC.",
+   77
+  ],
+  [
+   "ABBVIE INC.",
+   70
+  ]
+ ],
+ "undeclared_usd_total": 78050725,
+ "usd_to_inr": 100
+}

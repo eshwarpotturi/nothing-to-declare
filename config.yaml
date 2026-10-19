@@ -1,0 +1,40 @@
+# Nothing to Declare — pipeline settings. Change values and re-run `python run.py`.
+# Cached API responses live in private/cache, so re-runs only fetch what is new.
+
+papers:
+  # Journal list is private (private/journals.yaml) so the public repo names no publisher.
+  journals_file: private/journals.yaml
+  from_date: "2023-10-01"
+  to_date: "2026-10-19"
+  open_access_only: true
+  country_filter: "USA"          # Open Payments only covers US clinicians
+
+payments:
+  # Program years are resolved automatically from the Open Payments catalogue.
+  lookback_years: 3              # payments in the 3 calendar years before publication
+  meal_only_ignore_below: 1000   # meals/travel only, under this total (USD), are not flagged
+  flag_any_amount_for:           # these payment types are flagged at any amount
+    - Consulting Fee
+    - Honoraria
+    - Compensation for services other than consulting
+    - Compensation for serving as faculty or as a speaker
+    - Royalty or License
+    - Grant
+  exclude_types:                 # not personal relationships worth a COI line in this demo
+    - Acquisitions
+  min_total_usd: 1000            # otherwise flag when the undeclared total reaches this
+
+matching:
+  require_city_in_affiliation: true   # payee's city must appear in the author's affiliation
+  name_batch_size: 60                 # names per Open Payments query
+  workers: 4
+
+llm:
+  enabled: true
+  base_url: "https://llmfoundry.straivedemo.com/openai/v1"
+  model: "gpt-4.1-mini"
+  token_env: "LLMFOUNDRY_TOKEN"       # or put LLMFOUNDRY_TOKEN=... in private/.env
+
+publish:
+  usd_to_inr: 100
+  round_usd_to: 1000             # public amounts rounded to the nearest $1,000

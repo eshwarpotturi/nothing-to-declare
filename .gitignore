@@ -1,0 +1,5 @@
+# Un-anonymised data, caches, keys and the journal list stay local
+private/
+.env
+__pycache__/
+*.pyc
