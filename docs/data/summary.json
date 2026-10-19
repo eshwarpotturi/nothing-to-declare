@@ -165,5 +165,58 @@
   ]
  ],
  "undeclared_usd_total": 78050725,
- "usd_to_inr": 100
+ "usd_to_inr": 100,
+ "paper_status": {
+  "red": 967,
+  "green": 1474,
+  "amber": 101,
+  "grey": 336
+ },
+ "by_year_rate": {
+  "2023": {
+   "checked": 566,
+   "red": 43
+  },
+  "2024": {
+   "checked": 3741,
+   "red": 389
+  },
+  "2025": {
+   "checked": 6546,
+   "red": 786
+  },
+  "2026": {
+   "checked": 4799,
+   "red": 596
+  }
+ },
+ "median_usd": 8813,
+ "amount_bins": [
+  [
+   "Under $2k",
+   352
+  ],
+  [
+   "$2k\u20135k",
+   352
+  ],
+  [
+   "$5k\u201310k",
+   277
+  ],
+  [
+   "$10k\u201350k",
+   520
+  ],
+  [
+   "$50k\u2013100k",
+   137
+  ],
+  [
+   "$100k+",
+   176
+  ]
+ ],
+ "fees_share": 0.856,
+ "blanket_red": 556
 }

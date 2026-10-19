@@ -64,6 +64,27 @@ def main():
         "undeclared_usd_total": int(sum(sum(r["paid"][co]["total"] for co in r["undeclared"]) for r in red)),
         "usd_to_inr": c["publish"]["usd_to_inr"],
     }
+    # story extras: paper-level status, yearly rates, amount distribution
+    by_paper = defaultdict(set)
+    for r in rows:
+        by_paper[r["pmcid"]].add(r["channel"])
+    def pstatus(ch):
+        if "red" in ch: return "red"
+        if "amber" in ch: return "amber"
+        if "green" in ch: return "green"
+        return "grey"
+    summary["paper_status"] = dict(Counter(pstatus(v) for v in by_paper.values()))
+    yr = defaultdict(Counter)
+    for r in rows:
+        yr[int(r["date"][:4])][r["channel"]] += 1
+    summary["by_year_rate"] = {y: {"checked": v["red"] + v["amber"] + v["green"], "red": v["red"]} for y, v in sorted(yr.items())}
+    totals = sorted(sum(r["paid"][co]["total"] for co in r["undeclared"]) for r in red)
+    summary["median_usd"] = int(totals[len(totals) // 2]) if totals else 0
+    bins = [(0, 2000, "Under $2k"), (2000, 5000, "$2k–5k"), (5000, 10000, "$5k–10k"), (10000, 50000, "$10k–50k"),
+            (50000, 100000, "$50k–100k"), (100000, 1e18, "$100k+")]
+    summary["amount_bins"] = [[lab, sum(lo <= t < hi for t in totals)] for lo, hi, lab in bins]
+    summary["fees_share"] = round(sum(x["fees"] for x in cases) / max(1, len(cases)), 3)
+    summary["blanket_red"] = sum(r["reason"] == "statement declares no conflicts" for r in red)
     (PUBLIC / "cases.json").write_text(json.dumps(cases, indent=1))
     (PUBLIC / "summary.json").write_text(json.dumps(summary, indent=1))
     log(f"public: {len(cases)} anonymised red cases, summary {dict(counts)}")

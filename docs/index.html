@@ -4,240 +4,314 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nothing to Declare</title>
-<meta name="description" content="Conflict-of-interest declarations in medical papers, checked against public US records of industry payments to doctors.">
+<meta name="description" content="One in three medical papers with US authors has an author who did not declare drug or device company money. A check of 2,878 papers against public payment records.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: an airport arrivals hall: departure board, channel counters by field, then a passenger queue beside a secondary-inspection desk */
+/* Layout: a single-column data story. Finding headline + paper grid above the fold, then one chart per claim, actions, and an explorer at the end */
 :root{
-  --bg:#eef1f4; --panel:#ffffff; --ink:#14202e; --muted:#5b6878; --line:#d5dbe2;
-  --board:#16202b; --board-ink:#f2c14e; --board-dim:#8a93a0; --xray:#cfe3ff; --xray-dim:#8fa3b8; --xray-line:#33414f;
-  --green:#127a4b; --green-bg:#e3f2ea; --red:#b3261e; --red-bg:#fbe7e5; --amber:#9a5b00; --amber-bg:#fdf0d9; --grey:#6b7480; --grey-bg:#eceff2;
-  --form:#fbf8ef; --form-line:#c9bfa3; --hot:#ff8a80; --board-green:#6fe0a6;
-  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --bg:#f7f6f2; --paper:#ffffff; --ink:#1b2430; --ink2:#4a5563; --muted:#7a8592; --rule:#e2e0d8;
+  --good:#1f9d55; --good-bg:#e4f4ea; --warn:#c98a00; --warn-bg:#fbf0d6; --bad:#d1382c; --bad-bg:#fbe5e2; --none:#a8b0b9; --none-bg:#eef0f2;
+  --xray:#18222d; --xray-ink:#d9e6f5; --xray-dim:#8fa3b8; --gold:#f2c14e; --form:#fbf8ef; --form-line:#d8ceb2;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f151c; --panel:#18212b; --ink:#e6ebf0; --muted:#9aa6b4; --line:#2b3642;
-  --board:#0a0f14; --board-dim:#7d8794; --xray-line:#2c3846;
-  --green:#4cc38a; --green-bg:#11291e; --red:#ff7b72; --red-bg:#331614; --amber:#f0b45a; --amber-bg:#33240c; --grey:#9aa3ad; --grey-bg:#222b35;
-  --form:#1f2329; --form-line:#4a4436; color-scheme:dark}}
+  --bg:#12171d; --paper:#1a2129; --ink:#e8edf2; --ink2:#b4bfcb; --muted:#8b97a4; --rule:#2c3540;
+  --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad-bg:#3a1714; --none:#66717d; --none-bg:#232b34;
+  --xray:#0b1015; --form:#20242a; --form-line:#4a4436; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f151c; --panel:#18212b; --ink:#e6ebf0; --muted:#9aa6b4; --line:#2b3642;
-  --board:#0a0f14; --board-dim:#7d8794; --xray-line:#2c3846;
-  --green:#4cc38a; --green-bg:#11291e; --red:#ff7b72; --red-bg:#331614; --amber:#f0b45a; --amber-bg:#33240c; --grey:#9aa3ad; --grey-bg:#222b35;
-  --form:#1f2329; --form-line:#4a4436; color-scheme:dark}
+  --bg:#12171d; --paper:#1a2129; --ink:#e8edf2; --ink2:#b4bfcb; --muted:#8b97a4; --rule:#2c3540;
+  --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad-bg:#3a1714; --none:#66717d; --none-bg:#232b34;
+  --xray:#0b1015; --form:#20242a; --form-line:#4a4436; color-scheme:dark}
 *{box-sizing:border-box}
 html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
-.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px;display:grid;gap:22px}
-.eyebrow{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(38px,6.5vw,64px);line-height:1;margin:4px 0 8px;text-wrap:balance}
-h2{font-family:var(--display);font-weight:700;font-size:24px;margin:0;letter-spacing:.02em;text-wrap:balance}
-header p{margin:0;max-width:66ch;color:var(--muted);font-size:16px}
-header strong{color:var(--ink)}
-.board{background:var(--board);border-radius:6px;padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
-.cell{display:grid;gap:4px;min-width:0}
-.cell span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--board-dim)}
-.cell b{font-family:var(--mono);font-weight:500;font-size:clamp(22px,3vw,30px);color:var(--board-ink);font-variant-numeric:tabular-nums;letter-spacing:.04em}
-.cell b.g{color:var(--board-green)}.cell b.r{color:var(--hot)}
-.cell small{color:var(--board-dim);font-family:var(--mono);font-size:11px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:14px;min-width:0}
-.two{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:20px}
-@media (max-width:900px){.two{grid-template-columns:1fr}}
-.bars{display:grid;gap:8px}
-.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 72px;gap:10px;align-items:center;font-size:13.5px}
-@media (max-width:520px){.bar{grid-template-columns:110px minmax(0,1fr) 60px}}
-.track{height:14px;background:var(--grey-bg);border-radius:3px;overflow:hidden;display:flex}
-.track i{display:block;height:100%}
-.track i.r{background:var(--red)}.track i.a{background:var(--amber)}
-.bar .v{font-family:var(--mono);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
-.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-ol.payers{margin:0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:p}
-ol.payers li{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:8px;font-size:13.5px;counter-increment:p;align-items:baseline}
-ol.payers li::before{content:counter(p);font-family:var(--mono);color:var(--muted);font-size:12px}
-ol.payers li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-ol.payers li b{font-family:var(--mono);font-weight:500;font-size:12.5px}
-.note{font-size:12.5px;color:var(--muted);margin:0}
-.hall{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px;align-items:start}
-@media (max-width:900px){.hall{grid-template-columns:1fr}}
-.queue{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;min-width:0}
-.qhead{padding:14px;border-bottom:1px solid var(--line);display:grid;gap:10px}
-.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.controls label{font-size:12.5px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
-select,input[type=checkbox]{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:4px 6px}
-.count{font-family:var(--mono);font-size:12px;color:var(--muted)}
-ul.pax{list-style:none;margin:0;padding:0;max-height:620px;overflow-y:auto}
-.pax button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:6px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
-.pax button:hover,.pax button[aria-current="true"]{background:var(--grey-bg)}
-.pax button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
-.lane{align-self:stretch;border-radius:3px;background:var(--red)}
-.pt{min-width:0}
-.pt b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pt small{color:var(--muted);font-size:12px}
-.amt{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
-.more{all:unset;display:block;text-align:center;padding:10px;font-size:13px;color:var(--ink);cursor:pointer;font-weight:500}
-.more:focus-visible{outline:2px solid var(--ink)}
-.desk{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:16px;min-width:0}
-.deskhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
-.pill{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;white-space:nowrap;background:var(--red-bg);color:var(--red)}
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:600px){.compare{grid-template-columns:1fr}}
-.form{background:var(--form);border:1px solid var(--form-line);border-radius:4px;padding:14px;font-family:var(--mono);font-size:13px;display:grid;gap:8px;align-content:start;min-width:0}
-.ft{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:6px}
-.row{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px}
-.row span{color:var(--muted)}
-.box{display:inline-flex;gap:8px;align-items:flex-start}
-.box i{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;border:1.5px solid var(--ink);font-style:normal;font-size:11px;line-height:1;margin-top:2px}
-.xray{background:var(--board);color:var(--xray);border-radius:4px;padding:14px;font-family:var(--mono);font-size:13px;display:grid;gap:8px;align-content:start;min-width:0}
-.xray .ft{color:var(--board-dim);border-bottom-color:var(--xray-line)}
-.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;padding:7px 9px;border:1px solid var(--hot);border-radius:3px;box-shadow:inset 3px 0 0 var(--hot)}
-.item b{color:#fff;font-weight:500;overflow-wrap:anywhere}
-.item em{font-style:normal;color:var(--board-ink);font-variant-numeric:tabular-nums}
-.item small{grid-column:1/-1;color:var(--xray-dim);font-size:11px}
-.item.total{border-color:var(--xray-line);box-shadow:none}
-.item.total b{white-space:nowrap}
-.verdict{border-radius:4px;padding:12px 14px;display:grid;gap:2px;background:var(--red-bg);border-left:4px solid var(--red)}
-.verdict b{font-family:var(--display);font-size:20px;letter-spacing:.02em}
-details.letter{border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:14px}
-details.letter summary{cursor:pointer;font-weight:600}
-details.letter p{margin:10px 0 0;max-width:68ch}
-.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
-.how div{border-top:2px solid var(--ink);padding-top:8px}
-.how b{font-family:var(--display);font-size:19px;display:block}
-.how p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
-.foot{font-size:13px;color:var(--muted);max-width:86ch;margin:0}
-@media (prefers-reduced-motion:no-preference){.xray .item{animation:scan .45s ease-out both}}
-@keyframes scan{from{opacity:.35;transform:translateX(-4px)}to{opacity:1;transform:none}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.55}
+.col{max-width:1040px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+section{padding-block:44px;border-top:1px solid var(--rule)}
+.kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+h1,h2{font-family:var(--serif);font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5.6vw,60px);line-height:1.05;max-width:20ch}
+h2{font-size:clamp(26px,3.6vw,38px);line-height:1.12;max-width:26ch}
+p{margin:0}
+.lede{font-size:clamp(18px,2vw,21px);color:var(--ink2);max-width:62ch;margin-top:14px}
+.body{color:var(--ink2);max-width:64ch;margin-top:10px}
+.red{color:var(--bad)}.grn{color:var(--good)}.amb{color:var(--warn)}
+b.num{font-family:var(--mono);font-weight:500}
+/* hero */
+.hero{padding-block:36px 40px;border-top:0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;margin-top:26px;align-items:start}
+@media (max-width:860px){.hero-grid{grid-template-columns:1fr}}
+.papers{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:16px;min-width:0}
+.papers canvas{width:100%;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:15px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+.stats{display:grid;gap:12px}
+.stat{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.stat b{display:block;font-family:var(--serif);font-weight:800;font-size:38px;line-height:1.05}
+.stat span{font-size:15.5px;color:var(--ink2)}
+/* case */
+.case{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;margin-top:24px;align-items:stretch}
+@media (max-width:760px){.case{grid-template-columns:1fr}.vs{display:none}}
+.form{background:var(--form);border:1px solid var(--form-line);border-radius:6px;padding:18px;font-family:var(--mono);font-size:14px;display:grid;gap:10px;align-content:start}
+.ft{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--form-line);padding-bottom:8px}
+.form .stamp{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--good);border:3px solid var(--good);border-radius:6px;padding:4px 10px;justify-self:start;transform:rotate(-3deg);margin-top:6px}
+.vs{align-self:center;font-family:var(--serif);font-size:22px;color:var(--muted)}
+.xray{background:var(--xray);color:var(--xray-ink);border-radius:6px;padding:18px;font-family:var(--mono);font-size:14px;display:grid;gap:10px;align-content:start}
+.xray .ft{color:var(--xray-dim);border-bottom-color:#33414f}
+.pay{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;border:1px solid var(--bad);box-shadow:inset 3px 0 0 var(--bad);border-radius:4px;padding:8px 10px}
+.pay b{color:#fff;font-weight:500;overflow-wrap:anywhere}.pay em{font-style:normal;color:var(--gold)}
+.pay small{grid-column:1/-1;color:var(--xray-dim);font-size:12px}
+.verdict{margin-top:14px;background:var(--bad-bg);border-left:4px solid var(--bad);border-radius:4px;padding:12px 16px;font-size:16.5px}
+/* charts */
+.chart{margin-top:22px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:18px 18px 12px;min-width:0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart svg text{font-family:var(--sans);fill:var(--ink2);font-size:14px}
+.chart svg .lab{fill:var(--ink);font-weight:600}
+.chart svg .val{font-family:var(--mono);font-size:13px;fill:var(--ink2)}
+.chart svg .note{fill:var(--ink);font-size:14.5px;font-weight:600}
+.chart svg .axis{stroke:var(--rule)}
+.chart .cap{font-size:14px;color:var(--muted);margin-top:8px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media (max-width:860px){.split{grid-template-columns:1fr}}
+.split h2{font-size:clamp(24px,3vw,30px)}
+.split>div{min-width:0}
+/* actions */
+.acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
+@media (max-width:860px){.acts{grid-template-columns:1fr}}
+.act{background:var(--paper);border:1px solid var(--rule);border-top:4px solid var(--good);border-radius:8px;padding:16px 18px}
+.act b{font-family:var(--serif);font-size:21px;display:block;margin-bottom:4px}
+.act p{color:var(--ink2);font-size:16px}
+/* explorer */
+.explorer{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;margin-top:22px;align-items:start}
+@media (max-width:860px){.explorer{grid-template-columns:1fr}}
+.queue{background:var(--paper);border:1px solid var(--rule);border-radius:8px;overflow:hidden;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px 12px;padding:12px 14px;border-bottom:1px solid var(--rule);font-size:14.5px;color:var(--ink2);align-items:center}
+.controls label{display:inline-flex;gap:6px;align-items:center}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:4px;padding:3px 6px}
+.count{font-family:var(--mono);font-size:12.5px;color:var(--muted);width:100%}
+ul.list{list-style:none;margin:0;padding:0;max-height:460px;overflow-y:auto}
+.list button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:5px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:15.5px}
+.list button:hover,.list button[aria-current="true"]{background:var(--none-bg)}
+.list button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.list i{align-self:stretch;background:var(--bad);border-radius:3px}
+.list small{display:block;color:var(--muted);font-size:13px}
+.list .amt{font-family:var(--mono);font-size:13.5px}
+.list .more{all:unset;display:block;text-align:center;padding:10px;font-weight:600;cursor:pointer;font-size:14.5px}
+.desk{display:grid;gap:12px;min-width:0}
+.desk .case{margin-top:0;grid-template-columns:1fr 1fr}
+@media (max-width:560px){.desk .case{grid-template-columns:1fr}}
+details{margin-top:4px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:12px 16px;font-size:16px}
+details summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;color:var(--ink2);max-width:64ch}
+.method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
+@media (max-width:860px){.method{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.method{grid-template-columns:1fr}}
+.method div{border-top:2px solid var(--ink);padding-top:8px;font-size:15.5px;color:var(--ink2)}
+.method b{display:block;color:var(--ink);font-size:16.5px}
+.fine{font-size:14.5px;color:var(--muted);max-width:80ch;margin-top:18px}
+footer{padding-block:28px 48px;font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Research integrity · <span id="period">2023–2026</span></div>
-    <h1>Nothing to Declare?</h1>
-    <p>Every medical paper arrives with a declaration, often just <strong>"The authors declare no conflicts of interest."</strong> Journals rarely check the bag. We scanned each declaration against the US government's public record of what drug and device companies paid each doctor.</p>
-  </header>
 
-  <section class="board" aria-label="Arrivals board" id="board"></section>
-
-  <section class="two">
-    <div class="panel">
-      <h2>Red-channel rate by field</h2>
-      <div class="legend"><span><i style="background:var(--red)"></i>Undeclared payments</span><span><i style="background:var(--amber)"></i>Declared "no relevant" conflicts</span><span>Share of checked US authors</span></div>
-      <div class="bars" id="fields"></div>
-    </div>
-    <div class="panel">
-      <h2>Most-often undeclared payers</h2>
-      <ol class="payers" id="payers"></ol>
-      <p class="note">Number of flagged authors who received payments from each company that their paper did not declare.</p>
+<div class="col">
+  <section class="hero">
+    <p class="kicker">Nothing to Declare? · A disclosure check of medical journals, 2023–2026</p>
+    <h1>One in three medical papers has an author who didn't declare <span class="red">drug-company money</span>.</h1>
+    <p class="lede">Papers end with a promise: <em>"The authors declare no conflicts of interest."</em> Nobody checks it. We compared those statements with the US government's public record of payments from drug and device makers to doctors.</p>
+    <div class="hero-grid">
+      <div class="papers">
+        <canvas id="grid" role="img" aria-label="Grid of papers coloured by disclosure status"></canvas>
+        <div class="legend" id="gridLegend"></div>
+      </div>
+      <div class="stats" id="stats"></div>
     </div>
   </section>
 
-  <section class="hall">
-    <div class="queue">
-      <div class="qhead">
-        <h2>Secondary inspection queue</h2>
+  <section>
+    <p class="kicker">One real case, anonymised</p>
+    <h2>The form says "nothing to declare". The record says otherwise.</h2>
+    <p class="body">Each paper is a traveller at customs. The declaration is what the authors wrote. The X-ray is what companies were legally required to report paying them in the three years before publication.</p>
+    <div id="hero-case"></div>
+  </section>
+
+  <section>
+    <p class="kicker">How much</p>
+    <h2>This is mostly real money, not free lunches.</h2>
+    <p class="body" id="amountText"></p>
+    <div class="chart"><svg id="amounts" viewBox="0 0 960 300" role="img" aria-label="Undeclared amounts per author"></svg>
+      <p class="cap">Undeclared payments per flagged author, in the three years before publication. 1 US dollar ≈ ₹100.</p></div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div>
+        <p class="kicker">Where</p>
+        <h2>Every specialty has it. Some far more than others.</h2>
+        <div class="chart"><svg id="fields" viewBox="0 0 480 420" role="img" aria-label="Share of checked authors flagged, by field"></svg>
+          <p class="cap">Share of checked US authors with undeclared payments. Amber: the paper declared no <em>relevant</em> conflicts.</p></div>
+      </div>
+      <div>
+        <p class="kicker">Who pays</p>
+        <h2>The biggest names in pharma and devices.</h2>
+        <div class="chart"><svg id="payers" viewBox="0 0 480 420" role="img" aria-label="Companies most often left undeclared"></svg>
+          <p class="cap">Number of flagged authors paid by each company that their paper did not declare.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Trend</p>
+    <h2>And it is not going away.</h2>
+    <p class="body" id="trendText"></p>
+    <div class="chart"><svg id="trend" viewBox="0 0 960 280" role="img" aria-label="Share of checked authors flagged, by publication year"></svg>
+      <p class="cap">2023 covers October to December only. Older papers look back at earlier payment years, so part of the rise may reflect the data, not behaviour.</p></div>
+  </section>
+
+  <section>
+    <p class="kicker">So what</p>
+    <h2>What a journal can do on Monday.</h2>
+    <div class="acts">
+      <div class="act"><b>Check every submission</b><p>Run the declaration against the public payment record automatically, before review. It takes seconds per paper.</p></div>
+      <div class="act"><b>Ask, don't accuse</b><p>Send the author the evidence with a polite query. Most gaps are omissions, fixed with one updated line.</p></div>
+      <div class="act"><b>Publish with confidence</b><p>Readers, reviewers and regulators trust disclosures that have been checked. That is a quality mark competitors don't have.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Explore</p>
+    <h2>Walk through the red channel yourself.</h2>
+    <div class="explorer">
+      <div class="queue">
         <div class="controls">
           <label for="f-field">Field <select id="f-field"><option value="">All</option></select></label>
-          <label for="f-min">Undeclared ≥ <select id="f-min"><option value="0">any</option><option value="5000" selected>$5k</option><option value="10000">$10k</option><option value="50000">$50k</option></select></label>
-          <label for="f-fees"><input type="checkbox" id="f-fees" checked> Fees only</label>
+          <label for="f-min">At least <select id="f-min"><option value="0">any</option><option value="5000" selected>$5k</option><option value="10000">$10k</option><option value="50000">$50k</option></select></label>
           <label for="f-sort">Sort <select id="f-sort"><option value="usd">Largest</option><option value="year">Newest</option></select></label>
+          <span class="count" id="qcount"></span>
         </div>
-        <div class="count" id="qcount"></div>
+        <ul class="list" id="list"></ul>
       </div>
-      <ul class="pax" id="pax"></ul>
+      <div class="desk" id="desk"></div>
     </div>
-    <div class="desk" id="desk" aria-live="polite"></div>
   </section>
 
-  <section class="how" aria-label="How the scan works">
-    <div><b>Arrival</b><p>Open-access papers in 40 clinical journals with US authors. Each declaration is read from the full text.</p></div>
-    <div><b>Passport check</b><p>Each US author is matched to one doctor in the public payments record by name, state and city. Ambiguous matches are left out.</p></div>
-    <div><b>X-ray</b><p>Payments companies reported for that doctor in the 3 calendar years before publication, grouped by company and type.</p></div>
-    <div><b>Channel</b><p>Red when a paying company, or its corporate group, is missing from the declaration. Partial declarations are read by an AI model.</p></div>
+  <section>
+    <p class="kicker">How we checked</p>
+    <h2>Method and limits.</h2>
+    <div class="method">
+      <div><b>1 · Papers</b>Open-access papers in 40 clinical journals with US authors, Oct 2023 – Oct 2026. Declarations read from the full text.</div>
+      <div><b>2 · Matching</b>Each US author matched to one doctor in CMS Open Payments by name, state and city. Ambiguous matches are left out.</div>
+      <div><b>3 · Payments</b>Fees, grants, royalties, travel and meals that companies reported in the 3 calendar years before publication.</div>
+      <div><b>4 · Verdict</b>Red when a paying company or its corporate group is missing from the declaration. An AI model reads partial declarations.</div>
+    </div>
+    <p class="fine">A red flag is a question for an editor, not a finding of misconduct. Journal policies differ on what must be declared, and some disclosures reach the editor without being printed. Only US clinicians appear in the payment record. Authors are anonymised to specialty and US region; amounts are rounded to $1,000, and amounts over $100,000 appear only as bands. A hand check of 20 random red cases found about 9 in 10 correct.</p>
   </section>
-
-  <p class="foot">A red channel is a question for an editor, not a finding of misconduct. Journal policies differ on which relationships must be declared; some payments may have been disclosed to the editor but not printed. Only US clinicians are covered by the payment record, so non-US authors are not checked. Authors are anonymised: specialty and US region only, amounts rounded to the nearest $1,000, and amounts over $100,000 shown only as a band. Payment data: CMS Open Payments, program years 2020–2025. A hand check of 20 random red cases found about 9 in 10 correct.</p>
 </div>
+<footer class="col">Data: Europe PMC (papers), CMS Open Payments 2020–2025 (payments).</footer>
 
 <script>
+const $=id=>document.getElementById(id);
 const fmt=n=>"$"+Math.round(n).toLocaleString("en-US");
-const camt=c=>c.banded?fmt(c.usd)+"+":fmt(c.usd);
-const inr=n=>{const v=n*100; return v>=1e7?"₹"+(v/1e7).toFixed(1)+" crore":"₹"+(v/1e5).toFixed(1)+" lakh"};
+const k=n=>n>=1e6?"$"+(n/1e6).toFixed(1)+"M":n>=1e3?"$"+Math.round(n/1e3)+"k":"$"+n;
+const inr=n=>{const v=n*100;return v>=1e7?"₹"+(v/1e7).toFixed(1)+" crore":"₹"+(v/1e5).toFixed(1)+" lakh"};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const title=s=>s.toLowerCase().replace(/\b([a-z])/g,m=>m.toUpperCase()).replace(/\b(Inc|Llc|Lp|L\.l\.c|Us|Usa|Uk)\b\.?/gi,m=>m.toUpperCase().replace("L.L.C","LLC"));
-let CASES=[],S={},shown=40,current=null;
+const SMALL=new Set(["and","of","the","for","de"]);
+const nice=s=>s.split(/(\s+)/).map(w=>{const t=w.replace(/[^A-Za-z]/g,"");if(!t)return w;if(t.length<=3&&!SMALL.has(t.toLowerCase())&&!/^(inc|llc|ltd|co)$/i.test(t))return w.toUpperCase();if(SMALL.has(t.toLowerCase()))return w.toLowerCase();return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}).join("").replace(/\bInc\b/,"Inc").replace(/L\.l\.c\.?/i,"LLC");
+const ptype=t=>t.startsWith("Other")?"Other payments (e.g. royalties)":t.replace(/ \(speaker\/faculty\)/,"").replace("Compensation for services other than consulting","Speaker / faculty fees");
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+let S,C,shown=30,cur=null;
 
-function board(){
-  const c=S.channels, checked=c.red+c.amber+c.green+c.unclear;
-  const cells=[
-    ["Papers scanned",S.papers.toLocaleString(),S.period.replace(" to "," – ")],
-    ["US authors checked",checked.toLocaleString(),(c.not_checkable).toLocaleString()+" outside the record"],
-    ["Green channel",c.green.toLocaleString(),"bag matches the form","g"],
-    ["Red channel",c.red.toLocaleString(),"authors with undeclared payments","r"],
-    ["Papers with a red author",S.red_papers.toLocaleString(),Math.round(100*S.red_papers/S.papers)+"% of papers","r"],
-    ["Undeclared, total",fmt(S.undeclared_usd_total/1e6)+"M",inr(S.undeclared_usd_total)]];
-  document.getElementById("board").innerHTML=cells.map(([k,v,s,cl])=>`<div class="cell"><span>${k}</span><b class="${cl||""}">${v}</b><small>${s}</small></div>`).join("");
-  document.getElementById("period").textContent=S.period.replace(" to "," – ");
+function grid(){
+  const cv=$("grid"),w=cv.clientWidth,dpr=window.devicePixelRatio||1,ps=S.paper_status;
+  const order=[["red",ps.red||0],["amber",ps.amber||0],["green",ps.green||0],["grey",ps.grey||0]];
+  const total=order.reduce((a,b)=>a+b[1],0),cell=w<520?5:7,gap=2,cols=Math.floor(w/(cell+gap)),rows=Math.ceil(total/cols);
+  cv.style.height=rows*(cell+gap)+"px";cv.width=w*dpr;cv.height=rows*(cell+gap)*dpr;
+  const g=cv.getContext("2d");g.scale(dpr,dpr);
+  const col={red:css("--bad"),amber:css("--warn"),green:css("--good"),grey:css("--none")};let i=0;
+  for(const [kind,n] of order){g.fillStyle=col[kind];for(let j=0;j<n;j++,i++){const x=(i%cols)*(cell+gap),y=Math.floor(i/cols)*(cell+gap);g.beginPath();g.roundRect?g.roundRect(x,y,cell,cell,1.5):g.rect(x,y,cell,cell);g.fill()}}
+  const lab={red:"Undeclared payments",amber:"Declared only \"no relevant\" conflicts",green:"Declaration matches the record",grey:"No US author could be checked"};
+  const vr={red:"--bad",amber:"--warn",green:"--good",grey:"--none"};
+  $("gridLegend").innerHTML=`<span style="color:var(--muted)">Each square is one paper (${total.toLocaleString()})</span>`+order.map(([kd,n])=>`<span><i style="background:var(${vr[kd]})"></i>${lab[kd]} · <b class="num">${n.toLocaleString()}</b></span>`).join("");
 }
-function fields(){
-  const rows=Object.entries(S.by_field).map(([f,v])=>{const n=(v.red||0)+(v.amber||0)+(v.green||0);return {f,n,r:(v.red||0)/n,a:(v.amber||0)/n}}).filter(x=>x.n>=50).sort((a,b)=>b.r-a.r);
-  const max=Math.max(...rows.map(x=>x.r+x.a));
-  document.getElementById("fields").innerHTML=rows.map(x=>`<div class="bar"><span>${esc(x.f)}</span><div class="track" role="img" aria-label="${esc(x.f)}: ${(100*x.r).toFixed(1)}% red"><i class="r" style="width:${100*x.r/max}%"></i><i class="a" style="width:${100*x.a/max}%"></i></div><span class="v">${(100*x.r).toFixed(1)}%</span></div>`).join("");
-  const sel=document.getElementById("f-field");
-  [...new Set(CASES.map(c=>c.field))].sort().forEach(f=>{const o=document.createElement("option");o.value=f;o.textContent=f;sel.appendChild(o)});
+function stats(){
+  const c=S.channels,checked=c.red+c.amber+c.green,pp=Math.round(100*S.red_papers/S.papers);
+  $("stats").innerHTML=`
+   <div class="stat"><b class="red">${pp}%</b><span>of papers (${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()}) have at least one author with undeclared payments</span></div>
+   <div class="stat"><b class="red">1 in ${Math.round(checked/c.red)}</b><span>checked US authors took money their paper did not declare (${c.red.toLocaleString()} of ${checked.toLocaleString()})</span></div>
+   <div class="stat"><b>${inr(S.median_usd)}</b><span>typical undeclared amount per author (median ${k(S.median_usd)}); ${Math.round(100*S.fees_share)}% include consulting or speaker fees</span></div>`;
 }
-function payers(){
-  document.getElementById("payers").innerHTML=S.top_companies.slice(0,10).map(([co,n])=>`<li><span>${esc(title(co))}</span><b>${n}</b></li>`).join("");
-}
-function filtered(){
-  const f=document.getElementById("f-field").value, min=+document.getElementById("f-min").value, fees=document.getElementById("f-fees").checked, sort=document.getElementById("f-sort").value;
-  return CASES.filter(c=>(!f||c.field===f)&&c.usd>=min&&(!fees||c.fees)).sort(sort==="usd"?(a,b)=>b.usd-a.usd:(a,b)=>b.year-a.year||b.usd-a.usd);
-}
-function list(){
-  const all=filtered(), ul=document.getElementById("pax");
-  document.getElementById("qcount").textContent=`${all.length.toLocaleString()} red-channel authors match`;
-  if(!current||!all.includes(current)) current=all[0]||null;
-  ul.innerHTML="";
-  all.slice(0,shown).forEach(c=>{const li=document.createElement("li");const b=document.createElement("button");b.id="case-"+c.id;b.setAttribute("aria-current",c===current);
-    b.innerHTML=`<span class="lane"></span><span class="pt"><b>${esc(c.specialty)} · ${esc(c.region)}</b><small>${esc(c.field)} paper · ${c.year} · ${c.items.length} undeclared payer${c.items.length>1?"s":""}</small></span><span class="amt">${camt(c)}</span>`;
-    b.onclick=()=>{current=c;list();desk()};li.appendChild(b);ul.appendChild(li)});
-  if(all.length>shown){const li=document.createElement("li");const m=document.createElement("button");m.className="more";m.id="more";m.textContent=`Show ${Math.min(40,all.length-shown)} more`;m.onclick=()=>{shown+=40;list()};li.appendChild(m);ul.appendChild(li)}
-  desk();
-}
-function desk(){
-  const d=document.getElementById("desk"), c=current;
-  if(!c){d.innerHTML=`<h2>Secondary inspection</h2><p class="note">No authors match these filters. Lower the amount or switch off "Fees only".</p>`;return}
+function caseCard(c,big){
   const blanket=c.reason.startsWith("statement declares");
-  const form=blanket?"None declared":"Some relationships declared; these companies not listed";
-  const cos=c.items.map(i=>title(i.company));
-  d.innerHTML=`
-  <div class="deskhead"><h2>Secondary inspection · ${c.id}</h2><span class="pill">Red channel</span></div>
-  <div class="compare">
-    <div class="form"><div class="ft">Declaration form · as published</div>
-      <div class="row"><span>Traveller</span><div>${esc(c.specialty)}, US ${esc(c.region)}</div></div>
-      <div class="row"><span>Paper</span><div>${esc(c.field)} journal, ${c.year}</div></div>
-      <div class="row"><span>Conflicts</span><div class="box"><i>${blanket?"✓":"~"}</i><span>${form}</span></div></div>
-    </div>
-    <div class="xray"><div class="ft">X-ray · reported by companies, 3 years before</div>
-      ${c.items.map(i=>`<div class="item"><b>${esc(title(i.company))}</b><em>${i.band||fmt(i.usd)}</em><small>${i.types.map(esc).join(" · ")}</small></div>`).join("")}
-      <div class="item total"><b>Undeclared, total</b><em>${c.banded?"at least "+fmt(c.usd):fmt(c.usd)+" ≈ "+inr(c.usd)}</em></div>
-    </div>
-  </div>
-  <div class="verdict"><b>Send to editor</b><span>${blanket?"The paper declares no conflicts, but the public record shows payments from ":"The declaration lists other relationships but not "}${esc(cos.join(", "))}.</span></div>
-  <details class="letter"><summary>Draft query to the author</summary>
-    <p>Dear Dr —,</p>
-    <p>Thank you for your recent article. As part of a routine disclosure check, we noticed that public US records list payments to you from ${esc(cos.join(" and "))} in the three years before publication, which do not appear in the article's conflict-of-interest statement. Could you confirm whether these relationships should be added? If so, we are happy to publish an updated statement.</p>
-    <p>Kind regards,<br>Editorial Office</p>
-  </details>`;
+  const pays=c.items.map(i=>`<div class="pay"><b>${esc(nice(i.company))}</b><em>${i.band||k(i.usd)}</em><small>${i.types.slice(0,3).map(t=>esc(ptype(t))).join(" · ")}</small></div>`).join("");
+  const tot=c.banded?"at least "+k(c.usd):k(c.usd)+" ≈ "+inr(c.usd);
+  return `<div class="case">
+    <div class="form"><div class="ft">The declaration · as published</div>
+      <div>${esc(c.specialty)}, US ${esc(c.region)}</div><div>${esc(c.field)} paper, ${c.year}</div>
+      <div>Conflicts of interest: <b>${blanket?"None declared":"Some declared, these companies missing"}</b></div>
+      ${blanket?'<div class="stamp">NOTHING TO DECLARE</div>':""}</div>
+    ${big?'<div class="vs">vs</div>':""}
+    <div class="xray"><div class="ft">The X-ray · what companies reported paying</div>${pays}
+      <div class="pay" style="border-color:#33414f;box-shadow:none"><b>Undeclared total</b><em>${tot}</em></div></div>
+  </div>`;
 }
-["f-field","f-min","f-fees","f-sort"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{shown=40;current=null;list()}));
-Promise.all([fetch("data/summary.json").then(r=>r.json()),fetch("data/cases.json").then(r=>r.json())]).then(([s,c])=>{S=s;CASES=c;board();fields();payers();list()})
- .catch(()=>{document.getElementById("desk").innerHTML='<p class="note">Could not load the scan results. Reload the page to try again.</p>'});
+function heroCase(){
+  const c=C.find(x=>x.reason.startsWith("statement declares")&&x.fees&&!x.banded&&x.items.length===2&&x.usd>=20000&&x.usd<=60000)||C[0];
+  $("hero-case").innerHTML=caseCard(c,true)+`<div class="verdict"><b>Red channel.</b> The paper says it has nothing to declare, while ${c.items.map(i=>esc(nice(i.company))).join(" and ")} reported paying this author ${k(c.usd)} (${inr(c.usd)}). A journal would send a polite query; today, nobody does.</div>`;
+}
+function bars(svgId,rows,opt){
+  // rows: [{label, a (red), b (amber, optional), text}]
+  const svg=$(svgId),W=opt.W,LW=opt.lw,rh=opt.rh,top=6,max=Math.max(...rows.map(r=>r.a+(r.b||0)));
+  const H=top+rows.length*rh+6;svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const sc=v=>(W-LW-70)*v/max;
+  svg.innerHTML=rows.map((r,i)=>{const y=top+i*rh,wA=sc(r.a),wB=sc(r.b||0);
+    return `<g><title>${esc(r.label)}: ${r.text}</title><text x="${LW-10}" y="${y+rh/2+5}" text-anchor="end" class="${i<opt.hl?"lab":""}">${esc(r.label)}</text>
+      <rect x="${LW}" y="${y+5}" width="${Math.max(2,wA)}" height="${rh-12}" rx="3" fill="var(--bad)"/>
+      ${wB>0?`<rect x="${LW+wA+2}" y="${y+5}" width="${Math.max(2,wB-2)}" height="${rh-12}" rx="3" fill="var(--warn)"/>`:""}
+      <text x="${LW+wA+wB+8}" y="${y+rh/2+5}" class="val">${r.text}</text></g>`}).join("");
+}
+function charts(){
+  // amounts histogram
+  const bins=S.amount_bins,tot=bins.reduce((a,b)=>a+b[1],0),svg=$("amounts"),W=960,H=300,b0=40,bh=200,mx=Math.max(...bins.map(b=>b[1])),bw=(W-60)/bins.length;
+  svg.innerHTML=`<line class="axis" x1="30" x2="${W-30}" y1="${b0+bh}" y2="${b0+bh}"/>`+bins.map((b,i)=>{const h=bh*b[1]/mx,x=30+i*bw+8,big=i>=3;
+    return `<g><title>${b[0]}: ${b[1]} authors</title><rect x="${x}" y="${b0+bh-h}" width="${bw-16}" height="${h}" rx="4" fill="var(--bad)" opacity="${big?1:.55}"/>
+    <text x="${x+(bw-16)/2}" y="${b0+bh-h-8}" text-anchor="middle" class="val">${b[1]} · ${Math.round(100*b[1]/tot)}%</text>
+    <text x="${x+(bw-16)/2}" y="${b0+bh+22}" text-anchor="middle" class="${big?"lab":""}">${b[0]}</text></g>`}).join("")
+    +(()=>{const over10=bins.slice(3).reduce((a,b)=>a+b[1],0);const x0=30+3*bw+8,x1=30+6*bw-8;return `<path d="M${x0} 22 H${x1}" stroke="var(--ink)" stroke-width="1.5"/><text x="${(x0+x1)/2}" y="14" text-anchor="middle" class="note">${Math.round(100*over10/tot)}% got more than $10k (₹10 lakh)</text>`})();
+  $("amountText").innerHTML=`Half of the flagged authors received more than <b class="num">${k(S.median_usd)}</b> (${inr(S.median_usd)}) that their paper never mentioned. <b>${Math.round(100*S.fees_share)}%</b> of them were paid consulting, speaker or other fees, the kind of relationship journals ask authors to declare.`;
+  // fields
+  const fr=Object.entries(S.by_field).map(([f,v])=>{const n=(v.red||0)+(v.amber||0)+(v.green||0);return {f,n,r:(v.red||0)/n,a:(v.amber||0)/n}}).filter(x=>x.n>=50).sort((a,b)=>b.r-a.r);
+  bars("fields",fr.map(x=>({label:x.f,a:x.r,b:x.a,text:`${(100*x.r).toFixed(0)}% · 1 in ${Math.round(1/x.r)}`})),{W:480,lw:170,rh:34,hl:2});
+  // payers
+  bars("payers",S.top_companies.slice(0,10).map(([co,n])=>({label:nice(co).replace(/,? (Inc|Corporation|LLC|LP|Company)\.?$/i,"").replace(/ Pharmaceuticals?/,"").slice(0,26),a:n,text:n})),{W:480,lw:190,rh:38,hl:3});
+  // trend
+  const ys=Object.entries(S.by_year_rate).map(([y,v])=>({y,r:v.red/v.checked})),t=$("trend"),TW=960,TH=280,l=90,r=60,tp=40,bt=230,mxr=Math.max(...ys.map(d=>d.r))*1.25;
+  const X=i=>l+i*(TW-l-r)/(ys.length-1),Y=v=>bt-(bt-tp)*v/mxr;
+  t.innerHTML=[0,.05,.1].map(v=>`<line class="axis" x1="${l}" x2="${TW-r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${l-10}" y="${Y(v)+5}" text-anchor="end" class="val">${v*100}%</text>`).join("")
+   +`<path d="M${ys.map((d,i)=>X(i)+" "+Y(d.r)).join(" L")}" fill="none" stroke="var(--bad)" stroke-width="3"/>`
+   +ys.map((d,i)=>`<g><title>${d.y}: ${(100*d.r).toFixed(1)}%</title><circle cx="${X(i)}" cy="${Y(d.r)}" r="6" fill="var(--bad)" stroke="var(--paper)" stroke-width="2"/><text x="${X(i)+(i===0?14:0)}" y="${Y(d.r)+(i===0?24:-14)}" text-anchor="${i===0?"start":"middle"}" class="note">${(100*d.r).toFixed(1)}%</text><text x="${X(i)}" y="${bt+26}" text-anchor="middle">${d.y}</text></g>`).join("");
+  const a=ys[0],z=ys[ys.length-1];
+  $("trendText").innerHTML=`The share of checked authors with undeclared payments went from <b class="num">${(100*a.r).toFixed(1)}%</b> of papers published in ${a.y} to <b class="num">${(100*z.r).toFixed(1)}%</b> in ${z.y}. Disclosure rules have not closed the gap.`;
+}
+function filtered(){const f=$("f-field").value,m=+$("f-min").value,s=$("f-sort").value;
+  return C.filter(c=>(!f||c.field===f)&&c.usd>=m).sort(s==="usd"?(a,b)=>b.usd-a.usd:(a,b)=>b.year-a.year||b.usd-a.usd)}
+function list(){const all=filtered(),ul=$("list");$("qcount").textContent=`${all.length.toLocaleString()} flagged authors`;
+  if(!cur||!all.includes(cur))cur=all[0]||null;ul.innerHTML="";
+  all.slice(0,shown).forEach(c=>{const li=document.createElement("li"),b=document.createElement("button");b.id="c-"+c.id;b.setAttribute("aria-current",c===cur);
+    b.innerHTML=`<i></i><span>${esc(c.specialty)} · ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${c.items.length} undeclared ${c.items.length>1?"companies":"company"}</small></span><span class="amt">${c.banded?k(c.usd)+"+":k(c.usd)}</span>`;
+    b.onclick=()=>{cur=c;list()};li.appendChild(b);ul.appendChild(li)});
+  if(all.length>shown){const li=document.createElement("li"),m=document.createElement("button");m.className="more";m.id="more";m.textContent="Show more";m.onclick=()=>{shown+=30;list()};li.appendChild(m);ul.appendChild(li)}
+  $("desk").innerHTML=cur?caseCard(cur,false)+`<details><summary>Draft query the editor could send</summary><p>Dear Dr —, as part of a routine disclosure check we noticed that public US records list payments to you from ${cur.items.map(i=>esc(nice(i.company))).join(" and ")} in the three years before your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</p></details>`:`<p class="body">No flagged authors match these filters.</p>`}
+["f-field","f-min","f-sort"].forEach(id=>$(id).addEventListener("change",()=>{shown=30;cur=null;list()}));
+Promise.all([fetch("data/summary.json").then(r=>r.json()),fetch("data/cases.json").then(r=>r.json())]).then(([s,c])=>{S=s;C=c;
+  [...new Set(C.map(x=>x.field))].sort().forEach(f=>{const o=document.createElement("option");o.value=f;o.textContent=f;$("f-field").appendChild(o)});
+  grid();stats();heroCase();charts();list();
+  let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(grid,150)});
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",grid);
+}).catch(()=>{$("stats").innerHTML='<p class="body">Could not load the results. Reload the page to try again.</p>'});
 </script>
 </body>
 </html>
