@@ -81,7 +81,7 @@ def main():
             k = (norm_first(a["given"]), a["surname"].strip().upper(), a["state"])
             r = people.get(k)
             row = {"pmcid": p["pmcid"], "doi": p["doi"], "title": p["title"], "journal": p["journal"], "field": p["field"],
-                   "date": p["date"], "author": f"{a['given']} {a['surname']}", "state": a["state"], "aff": a["aff"],
+                   "date": p["date"], "author": f"{a['given']} {a['surname']}", "state": a["state"], "aff": a["aff"], "orcid": a.get("orcid", ""),
                    "coi": p["coi"], "window": f"{min(window)}-{max(window)}"}
             if not a["state"]:
                 row["channel"] = "not_checkable"

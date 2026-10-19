@@ -59,7 +59,7 @@ def parse(hit):
     xml = get(f"{EPMC}/{hit['pmcid']}/fullTextXML", as_json=False)
     root = ET.fromstring(xml)
     affs = {a.get("id"): text(a) for a in root.iter("aff")}
-    authors = []
+    authors, everyone = [], []
     for c in root.iter("contrib"):
         if c.get("contrib-type") != "author":
             continue
@@ -68,8 +68,12 @@ def parse(hit):
             continue
         aff = " | ".join(affs.get(x.get("rid"), "") for x in c.iter("xref") if x.get("ref-type") == "aff")
         aff = aff or text(c.find(".//aff"))
-        if "USA" in aff or "United States" in aff:
-            authors.append({"given": text(gn), "surname": text(sn), "aff": aff[:400], "state": state_of(aff)})
+        oid = next((text(x) for x in c.iter("contrib-id") if x.get("contrib-id-type") == "orcid"), "")
+        orcid = oid.rsplit("/", 1)[-1] if oid else ""
+        us = "USA" in aff or "United States" in aff
+        everyone.append({"name": f"{text(gn)} {text(sn)}", "us": us, "orcid": orcid})
+        if us:
+            authors.append({"given": text(gn), "surname": text(sn), "aff": aff[:400], "state": state_of(aff), "orcid": orcid})
     coi = []
     for tag in ("sec", "fn", "notes"):
         for el in root.iter(tag):
@@ -78,7 +82,7 @@ def parse(hit):
                 coi.append(text(el))
     return {"pmcid": hit["pmcid"], "doi": hit.get("doi"), "title": hit.get("title"), "journal": hit["journal"],
             "field": hit["field"], "date": hit["firstPublicationDate"], "year": int(hit["firstPublicationDate"][:4]),
-            "authors": authors, "coi": " ".join(dict.fromkeys(coi))[:4000]}
+            "authors": authors, "everyone": everyone, "coi": " ".join(dict.fromkeys(coi))[:4000]}
 
 
 def main():
@@ -86,7 +90,7 @@ def main():
     hits = search(c)
     log(f"fetching full text for {len(hits)} papers")
     papers = pool(hits, parse, 8, "full text")
-    papers = [p for p in papers if p["authors"]]
+    papers = [p for p in papers if p["authors"]]  # keep only papers with at least one US author
     write_jsonl(DATA / "papers.jsonl", papers)
     log(f"saved {len(papers)} papers with US authors, {sum(len(p['authors']) for p in papers)} US author slots")
 
