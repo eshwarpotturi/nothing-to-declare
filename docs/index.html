@@ -23,8 +23,9 @@
   --good:#3ccf7e; --good-bg:#14301f; --warn:#f2b632; --warn-bg:#3a2c0c; --bad:#ff6b5e; --bad2:#a84a42; --bad-bg:#3a1714; --none:#56616d; --none-bg:#232b34;
   --xray:#0b1015; --form:#20242a; --form-line:#4a4436; --shade:rgba(0,0,0,.6); color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:22px;line-height:1.5;min-width:1240px}
-.col{width:min(1440px,95vw);margin:0 auto}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:22px;line-height:1.5;width:1460px}
+html{background:var(--bg);overflow-x:hidden}
+.col{width:1400px;margin:0 auto}
 section{padding-block:30px;border-top:1px solid var(--rule)}
 .kicker{font-family:var(--mono);font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
 h1,h2{font-family:var(--serif);font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:0}
@@ -85,7 +86,7 @@ button{font:inherit;color:inherit}
 .cap{font-size:17px;color:var(--muted);margin-top:6px}
 .read{font-size:20px;color:var(--ink2);max-width:100ch;margin-top:8px}
 .read b{color:var(--ink)}
-.tip{position:fixed;pointer-events:none;z-index:60;background:var(--paper);border:1px solid var(--rule);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 14px;font-size:17px;max-width:360px;line-height:1.35}
+.tip{font-family:var(--sans);color:var(--ink);position:fixed;pointer-events:none;z-index:60;background:var(--paper);border:1px solid var(--rule);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 14px;font-size:17px;max-width:360px;line-height:1.35}
 .tip b{font-family:var(--serif);font-size:20px;display:block;margin-bottom:2px}
 .tip small{color:var(--muted);display:block;margin-top:4px;font-size:15px}
 /* split bar */
@@ -269,6 +270,8 @@ const amt=c=>c.banded?k(c.usd)+"+":k(c.usd);
 const fams=c=>[...new Set(c.items.map(i=>i.fam))];
 const famTxt=(c,n)=>{const f=fams(c);return f.slice(0,n).map(esc).join(", ")+(f.length>n?" +"+(f.length-n):"")};
 let S,C,P,byId={};
+/* fit the 1460px design to any monitor width */
+let Z=1;function fit(){Z=Math.max(.6,innerWidth/1460);document.body.style.zoom=Z}fit();addEventListener("resize",fit);
 
 /* ---------- theme (light by default) ---------- */
 function setTheme(t){document.documentElement.dataset.theme=t;$("theme").textContent=t==="dark"?"Light mode":"Dark mode";$("theme").setAttribute("aria-pressed",t==="dark");try{localStorage.setItem("ntd-theme",t)}catch(e){} if(P)drawGrid()}
@@ -325,8 +328,9 @@ function drawGrid(){
   sorted.forEach((p,i)=>{g.fillStyle=col[p.s];const x=(i%cols)*(cell+gap),y=Math.floor(i/cols)*(cell+gap);g.beginPath();g.roundRect?g.roundRect(x,y,cell,cell,2):g.rect(x,y,cell,cell);g.fill()});
   gridLayout={sorted,cols,cell,gap};
 }
-$("grid").addEventListener("click",e=>{if(!gridLayout)return;const r=e.target.getBoundingClientRect(),{sorted,cols,cell,gap}=gridLayout;
-  const i=Math.floor((e.clientY-r.top)/(cell+gap))*cols+Math.floor((e.clientX-r.left)/(cell+gap));const p=sorted[i];if(p)paperView(p)});
+function gridIndex(e){const cv=$("grid"),r=cv.getBoundingClientRect(),{cols,cell,gap}=gridLayout,sc=r.width/cv.clientWidth;return Math.floor((e.clientY-r.top)/sc/(cell+gap))*cols+Math.floor((e.clientX-r.left)/sc/(cell+gap))}
+$("grid").addEventListener("click",e=>{if(!gridLayout)return;const {sorted}=gridLayout;
+  const i=gridIndex(e);const p=sorted[i];if(p)paperView(p)});
 function paperView(p){
   if(p.c.length){const cs=p.c.map(id=>byId[id]);if(cs.length===1){openModal(caseView(cs[0],false));return}
     listView(`${p.f} paper, ${p.y}`,`${p.n} US authors checked. ${cs.length} have payments the paper did not declare.`,cs);return}
@@ -434,13 +438,13 @@ function trend(){
 }
 
 /* ---------- hover cards ---------- */
-const tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
+const tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.documentElement.appendChild(tip);
 function showTip(e,html){tip.innerHTML=html;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;let x=e.clientX+16,y=e.clientY+16;if(x+w>innerWidth-8)x=e.clientX-w-16;if(y+h>innerHeight-8)y=e.clientY-h-16;tip.style.left=x+"px";tip.style.top=y+"px"}
 function hideTip(){tip.hidden=true}
 function caseTip(c){return `<b>${esc(c.specialty)} · US ${esc(c.region)}</b>${esc(c.field)} paper, ${c.year}<br>Undeclared: <strong>${c.banded?"at least "+k(c.usd):k(c.usd)+" ("+inr(c.usd)+")"}</strong><br>${famTxt(c,3)}<small>Click to open the case</small>`}
 function wireTips(){
   $("swarm").addEventListener("mousemove",e=>{const id=e.target.dataset&&e.target.dataset.id;id?showTip(e,caseTip(byId[id])):hideTip()});$("swarm").addEventListener("mouseleave",hideTip);
-  $("grid").addEventListener("mousemove",e=>{if(!gridLayout)return;const r=e.target.getBoundingClientRect(),{sorted,cols,cell,gap}=gridLayout,i=Math.floor((e.clientY-r.top)/(cell+gap))*cols+Math.floor((e.clientX-r.left)/(cell+gap)),p=sorted[i];if(!p){hideTip();return}
+  $("grid").addEventListener("mousemove",e=>{if(!gridLayout)return;const {sorted}=gridLayout,i=gridIndex(e),p=sorted[i];if(!p){hideTip();return}
     const lab={red:"Undeclared payments",amber:'Declared only "no relevant" conflicts',green:"Declaration matches the record",grey:"No US author could be checked"}[p.s];
     showTip(e,`<b>${esc(p.f)} paper, ${p.y}</b>${lab}<br>${p.n} US author${p.n===1?"":"s"} checked${p.c.length?` · ${p.c.length} flagged`:""}<small>Click to open</small>`)});
   $("grid").addEventListener("mouseleave",hideTip);
