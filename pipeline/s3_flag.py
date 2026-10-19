@@ -11,7 +11,7 @@ from common import CACHE, DATA, RESULTS, cfg, env_token, log, pool, read_jsonl, 
 from companies import author_refs, family, named_in
 from s2_payments import norm_first
 
-RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|not relevant|unrelated to (this|the)|outside (the )?submitted work", re.I)
+RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|relevant to (the|this) (content|paper|work|study|article|manuscript|research)|not relevant|unrelated to (this|the)|outside (the )?submitted work", re.I)
 
 BLANKET = re.compile(r"(declare|report|have|has|disclose)[sd]?\s+(that\s+)?(there\s+(are|is)\s+)?(no|nothing)\b"
                      r"|no (known |potential |relevant )?(conflicts?|competing|financial)|none declared|nothing to (declare|disclose|report)", re.I)

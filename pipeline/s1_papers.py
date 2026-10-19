@@ -82,7 +82,7 @@ def parse(hit):
                 coi.append(text(el))
     return {"pmcid": hit["pmcid"], "doi": hit.get("doi"), "title": hit.get("title"), "journal": hit["journal"],
             "field": hit["field"], "date": hit["firstPublicationDate"], "year": int(hit["firstPublicationDate"][:4]),
-            "authors": authors, "everyone": everyone, "coi": " ".join(dict.fromkeys(coi))[:4000]}
+            "authors": authors, "everyone": everyone, "coi": " ".join(dict.fromkeys(coi))[:30000]}
 
 
 def main():

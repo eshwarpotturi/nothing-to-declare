@@ -10,7 +10,7 @@ FAMILIES = {
     "Sanofi": ["sanofi", "genzyme", "regeneron.*sanofi", "bioverativ", "provention"],
     "Merck": ["merck", "msd", "acceleron", "prometheus", "verona"],
     "Roche": ["roche", "genentech", "foundation medicine", "chugai", "spark therapeutics"],
-    "Novartis": ["novartis", "sandoz", "advanced accelerator", "avexis", "endocyte"],
+    "Novartis": ["novartis", "sandoz", "hexal", "advanced accelerator", "avexis", "endocyte"],
     "Pfizer": ["pfizer", "seagen", "seattle genetics", "arena", "global blood", "biohaven", "array biopharma", "hospira", "wyeth"],
     "AstraZeneca": ["astra ?zeneca", "astrazenca", "alexion", "medimmune", "acerta"],
     "Eli Lilly": ["lilly", "loxo", "dermira", "prevail"],
