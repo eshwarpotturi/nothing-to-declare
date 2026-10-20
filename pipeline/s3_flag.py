@@ -9,6 +9,7 @@ import requests
 
 from common import CACHE, DATA, RESULTS, cfg, env_token, log, pool, read_jsonl, write_jsonl
 from companies import author_refs, family, named_in
+from dates import anchor, program_years
 from s2_payments import norm_first
 
 RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|relevant to (the|this) (content|paper|work|study|article|manuscript|research)|not relevant|unrelated to (this|the)|outside (the )?submitted work", re.I)
@@ -74,15 +75,23 @@ def main():
     papers = read_jsonl(DATA / "papers.jsonl")
     people = {(r["first"], r["last"], r["state"]): r for r in read_jsonl(DATA / "payments.jsonl")}
 
-    rows, llm_jobs = [], []
+    # Disclosure window: the months before the anchor date (manuscript received, else publication).
+    # Step 2 pulls Open Payments totals by program (calendar) year, not dated payments, so every program
+    # year that overlaps the window counts in full.
+    mode = pay.get("window_anchor", "received")
+    months = pay.get("lookback_months") or 12 * pay.get("lookback_years", 3)
+    rows, llm_jobs, basis_n = [], [], defaultdict(int)
     for p in papers:
-        window = set(range(p["year"] - pay["lookback_years"], p["year"]))
+        anchor_date, basis = anchor(p, mode)
+        basis_n[basis] += 1
+        window = program_years(anchor_date, months)
         for a in p["authors"]:
             k = (norm_first(a["given"]), a["surname"].strip().upper(), a["state"])
             r = people.get(k)
             row = {"pmcid": p["pmcid"], "doi": p["doi"], "title": p["title"], "journal": p["journal"], "field": p["field"],
                    "date": p["date"], "author": f"{a['given']} {a['surname']}", "state": a["state"], "aff": a["aff"], "orcid": a.get("orcid", ""),
-                   "coi": p["coi"], "window": f"{min(window)}-{max(window)}"}
+                   "coi": p["coi"], "window": f"{min(window)}-{max(window)}",
+                   "window_anchor": anchor_date.isoformat(), "window_basis": basis}
             if not a["state"]:
                 row["channel"] = "not_checkable"
             elif not p["coi"]:
@@ -123,6 +132,8 @@ def main():
                     if row["channel"] == "red" and RELEVANT.search(p["coi"]):
                         row["channel"] = "amber"; row["reason"] += " (statement limits to relevant conflicts)"
             rows.append(row)
+    log(f"look-back {months} months from the {mode} date; papers using received date: {basis_n['received']}, "
+        f"publication date: {basis_n['published']}", basis_n["received"], len(papers))
 
     if llm_jobs:
         log(f"LLM check for {len(llm_jobs)} authors with partial disclosures")

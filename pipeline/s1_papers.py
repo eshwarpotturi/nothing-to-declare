@@ -3,6 +3,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from common import DATA, cfg, get, log, pool, write_jsonl
+from dates import received_date
 
 EPMC = "https://www.ebi.ac.uk/europepmc/webservices/rest"
 STATES = {"Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA", "Colorado": "CO",
@@ -82,6 +83,7 @@ def parse(hit):
                 coi.append(text(el))
     return {"pmcid": hit["pmcid"], "doi": hit.get("doi"), "title": hit.get("title"), "journal": hit["journal"],
             "field": hit["field"], "date": hit["firstPublicationDate"], "year": int(hit["firstPublicationDate"][:4]),
+            "received": received_date(root),  # manuscript received date, or None if the XML has none
             "authors": authors, "everyone": everyone, "coi": " ".join(dict.fromkeys(coi))[:30000]}
 
 
@@ -92,7 +94,9 @@ def main():
     papers = pool(hits, parse, 8, "full text")
     papers = [p for p in papers if p["authors"]]  # keep only papers with at least one US author
     write_jsonl(DATA / "papers.jsonl", papers)
+    n_rec = sum(1 for p in papers if p["received"])
     log(f"saved {len(papers)} papers with US authors, {sum(len(p['authors']) for p in papers)} US author slots")
+    log(f"papers with a received date: {n_rec}", n_rec, len(papers))
 
 
 if __name__ == "__main__":
