@@ -165,7 +165,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
   <section>
     <p class="kicker">One real case, anonymised</p>
     <h2>The form says "nothing to declare". The record says otherwise.</h2>
-    <p class="body">Each paper is a traveller at customs. The declaration is what the authors wrote. The X-ray is what companies were legally required to report paying them in the three years before publication.</p>
+    <p class="body">Each paper is a traveller at customs. The declaration is what the authors wrote. The X-ray is what companies were legally required to report paying them in the 36 months before the paper was submitted.</p>
     <div id="hero-case"></div>
   </section>
 
@@ -184,7 +184,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <p class="body" id="amountText"></p>
     <p class="read"><b>How to read:</b> each dot is one flagged author; further right means more undeclared money. <b>For a publisher</b>, everything right of the dashed line is a five-figure relationship readers never saw.</p>
     <div class="chart"><svg id="swarm" viewBox="0 0 1090 400" role="img" aria-label="Each flagged author as a dot on a dollar scale"></svg>
-      <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the three years before publication (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts. Click a dot to open the case.</p></div>
+      <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the 36 months before the paper was submitted (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts. Click a dot to open the case.</p></div>
   </section>
 
   <section>
@@ -247,7 +247,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <div class="method">
       <div><b>1 · Papers</b>Open-access papers in 40 clinical journals with US authors, Oct 2023 – Oct 2026. Declarations read from the full text.</div>
       <div><b>2 · Matching</b>Each US author matched to one doctor in CMS Open Payments by name, state and city. Ambiguous matches are left out.</div>
-      <div><b>3 · Payments</b>Fees, grants, royalties, travel and meals that companies reported in the 3 calendar years before publication.</div>
+      <div><b>3 · Payments</b>Fees, grants, royalties, travel and meals that companies reported in the full calendar years inside the 36 months before the paper was submitted.</div>
       <div><b>4 · Verdict</b>Red when a paying company or its corporate group is missing from the declaration. An AI model reads partial declarations.</div>
     </div>
     <p class="fine">A red flag is a question for an editor, not a finding of misconduct. Journal policies differ on what must be declared, and some disclosures reach the editor without being printed. Only US clinicians appear in the payment record. Authors are anonymised to specialty and US region; amounts are rounded to $1,000, and amounts over $100,000 appear only as bands. A hand check of 20 random red cases found about 9 in 10 correct.</p>
@@ -303,7 +303,7 @@ function caseView(c,back){
   return `${back?`<button class="back" id="mback">← Back to the list</button>`:""}<h3>${amb?"Amber":"Red"} channel · ${esc(c.specialty)}, US ${esc(c.region)}</h3>
    <p class="sub">${esc(c.field)} paper published in ${c.year}. ${amb?"The paper limits its statement to relevant conflicts, so whether these needed declaring depends on journal policy.":"The paper's declaration leaves out these payments."}</p>
    ${caseBlock(c,true)}
-   <div class="letter"><b>Draft query the editor could send:</b> Dear Dr —, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the three years before your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
+   <div class="letter"><b>Draft query the editor could send:</b> Dear Dr —, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the 36 months before you submitted your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
 }
 function listView(title,sub,cases,stats){
   const rows=cases.slice().sort((a,b)=>b.usd-a.usd).slice(0,200);
@@ -343,13 +343,13 @@ function hero(){
   $("gridLegend").innerHTML=`<span style="color:var(--muted)">Each square is one paper (${S.papers.toLocaleString()})</span>`+["red","amber","green","grey"].map(s=>`<span><i style="background:var(${vr[s]})"></i>${lab[s]} · <b class="num">${(ps[s]||0).toLocaleString()}</b></span>`).join("");
   const tiles=[
     {c:"--bad",big:pct(S.red_papers/S.papers),txt:`of papers have at least one author with undeclared payments (${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()})`,
-     why:`<h3>${pct(S.red_papers/S.papers)} of papers</h3><p class="sub">${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()} papers have at least one US author whom companies reported paying, in the three years before publication, without the paper declaring that company.</p><p class="body">A paper counts once even if several authors are flagged. Papers with no checkable US author (${(ps.grey||0).toLocaleString()}) stay in the total, so this is a conservative share.</p>`},
+     why:`<h3>${pct(S.red_papers/S.papers)} of papers</h3><p class="sub">${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()} papers have at least one US author whom companies reported paying, in the 36 months before the paper was submitted, without the paper declaring that company.</p><p class="body">A paper counts once even if several authors are flagged. Papers with no checkable US author (${(ps.grey||0).toLocaleString()}) stay in the total, so this is a conservative share.</p>`},
     {c:"--good",big:pct(ps.green/S.papers),txt:`of papers pass cleanly: every checked author's declaration matches the record`,
      why:`<h3>${pct(ps.green/S.papers)} of papers pass</h3><p class="sub">${ps.green.toLocaleString()} papers had no checked author with undeclared payments.</p><p class="body">Across all checked authors, ${pct(c.green/checked)} are green: either they had no significant industry payments, or their paper declared them. ${S.paid_authors.declared_all.toLocaleString()} paid authors declared every company correctly.</p>`},
     {c:"--bad",big:"1 in "+Math.round(checked/c.red),txt:`checked US authors took money their paper did not declare (${c.red.toLocaleString()} of ${checked.toLocaleString()})`,
      why:`<h3>1 in ${Math.round(checked/c.red)} authors</h3><p class="sub">${c.red.toLocaleString()} of ${checked.toLocaleString()} checked US authors are red.</p><p class="body">Checked means the author was matched to exactly one doctor in the payment record by name, state and city. ${c.unclear.toLocaleString()} authors with ambiguous matches were left out rather than guessed.</p>`},
     {c:"--ink",big:inr(S.median_usd),txt:`typical undeclared amount per flagged author (median ${k(S.median_usd)}); ${pct(S.fees_share)} include consulting or speaker fees`,
-     why:`<h3>${inr(S.median_usd)} typical</h3><p class="sub">Half of the flagged authors had more than ${k(S.median_usd)} in undeclared payments over the three years before their paper.</p><p class="body">${pct(S.fees_share)} of flagged authors received consulting, speaker, honoraria or grant payments, not only meals or travel.</p>`}];
+     why:`<h3>${inr(S.median_usd)} typical</h3><p class="sub">Half of the flagged authors had more than ${k(S.median_usd)} in undeclared payments over the 36 months before they submitted their paper.</p><p class="body">${pct(S.fees_share)} of flagged authors received consulting, speaker, honoraria or grant payments, not only meals or travel.</p>`}];
   $("stats").innerHTML=tiles.map((t,i)=>`<button class="stat" id="stat${i}" style="--c:var(${t.c})"><b>${t.big}</b><span>${t.txt}</span></button>`).join("");
   tiles.forEach((t,i)=>$("stat"+i).onclick=()=>openModal(t.why));
   const hc=C.find(x=>x.ch==="red"&&x.reason.startsWith("statement declares")&&x.fees&&!x.banded&&x.items.length===2&&x.usd>=20000&&x.usd<=60000)||C[0];

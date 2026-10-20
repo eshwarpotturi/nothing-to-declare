@@ -35,8 +35,14 @@ python run.py --from 3   # re-flag only, e.g. after changing rules in config.yam
 |---|---|---|
 | 1 Papers | `pipeline/s1_papers.py` | Fetches open-access full text from Europe PMC; extracts US authors, affiliations and the conflict-of-interest statement |
 | 2 Payments | `pipeline/s2_payments.py` | Matches each author to one Open Payments profile (name + state + city in the affiliation) and pulls payments by company and type |
-| 3 Flag | `pipeline/s3_flag.py` | Compares declared vs paid in the 3 calendar years before publication. Rules for "no conflicts" statements, corporate-group matching (`companies.py`), and an LLM for partial disclosures |
+| 3 Flag | `pipeline/s3_flag.py` | Compares declared vs paid in the 36 months before the paper was submitted (see below). Rules for "no conflicts" statements, corporate-group matching (`companies.py`), and an LLM for partial disclosures |
 | 4 Publish | `pipeline/s4_publish.py` | Writes anonymised `docs/data/*.json` for the dashboard and a private verification sample |
+
+### Which payments count
+
+Journals ask authors to declare relationships from the 36 months before they submit a paper (the ICMJE rule). So the check counts back 36 months from the date the journal received the paper. If the paper does not give that date, it uses the publication date instead.
+
+Open Payments reports money by calendar year, and the pipeline uses yearly totals, so it cannot split a year. It counts only the years that sit wholly inside the 36 months. For a paper received on 15 March 2024, the 36 months run from 15 March 2021 to 14 March 2024, so payments from 2022 and 2023 count. This misses some real payments in the part-years at each end, but every flag it raises is clearly inside the rule. Set `payments.year_rule: overlap` in `config.yaml` to count every year that touches the window instead. Set `payments.window_anchor: published` in `config.yaml` to count back from publication instead.
 
 All settings (dates, look-back, thresholds, matching, model) live in `config.yaml`. Every web response is cached locally, so re-runs are fast and cost nothing extra. Logs show a timestamp and done/total progress.
 
