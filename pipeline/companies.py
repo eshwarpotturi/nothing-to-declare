@@ -28,7 +28,7 @@ FAMILIES = {
     "Stryker": ["stryker", "wright medical", "vocera"],
     "BeiGene": ["beigene", "beone"],
     "CSL": ["csl", "vifor"],
-    "Daiichi Sankyo": ["daiichi"],
+    "Daiichi Sankyo": ["daiichi", "daichii", "daiichii", "dai-ichi"],
     "Otsuka": ["otsuka", "avanir", "astex"],
     "Astellas": ["astellas", "iveric", "audentes"],
     "Biogen": ["biogen"],
@@ -72,6 +72,9 @@ FAMILIES = {
     "Regeneron": ["regeneron"],
 }
 _COMPILED = {fam: re.compile(r"\b(" + "|".join(pats) + r")", re.I) for fam, pats in FAMILIES.items()}
+# Statements often write plain "Merck" for Merck KGaA / EMD Serono, so for that group a bare "Merck" counts as named.
+# (For Merck & Co the reverse is not allowed: "Merck KGaA" does not declare MSD.)
+ALSO_NAMED = {"Merck KGaA (EMD Serono)": re.compile(r"\bmerck\b", re.I)}
 
 
 def family(company):
@@ -93,8 +96,12 @@ def named_in(statement, company):
     fam = family(company)
     rx = _COMPILED.get(fam)
     if rx:
-        return bool(rx.search(statement))
-    return bool(re.search(r"\b" + re.escape(fam).replace(r"\ ", r"[\s-]?") + r"\b", statement, re.I))
+        return bool(rx.search(statement)) or bool(ALSO_NAMED.get(fam) and ALSO_NAMED[fam].search(statement))
+    if re.search(r"\b" + re.escape(fam).replace(r"\ ", r"[\s-]?") + r"\b", statement, re.I):
+        return True
+    # short brand written alone, e.g. "TG" for TG Therapeutics (capitals only, so ordinary words don't match)
+    short = fam.split()[0]
+    return " " in fam and len(short) >= 2 and short.isupper() and bool(re.search(r"\b" + re.escape(short) + r"\b", statement))
 
 
 def author_refs(given, surname):

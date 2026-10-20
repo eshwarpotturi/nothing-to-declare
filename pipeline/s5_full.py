@@ -57,8 +57,19 @@ def main():
             auth.append({"name": a["name"], "st": st, "case": cid_of.get((pm, a["name"])), "orcid": a.get("orcid", "")})
         papers.append({**pub, "t": m["title"], "j": m["journal"], "doi": m["doi"], "a": auth})
 
+    # hand-checked cases (from handcheck.py) and the audit of all hand checks, if present
+    hc_path, audit_path = RESULTS / "handcheck.json", RESULTS / "audit.json"
+    hand = json.loads(hc_path.read_text(encoding="utf-8")) if hc_path.exists() else []
+    orcid = {(r["pmcid"], r["author"]): r.get("orcid", "") for r in rows}
+    for h in hand:
+        pm = h["key"].split("|")[0]
+        h["orcid"] = orcid.get((pm, h["name"]), "")
+        h["scholar"] = "https://scholar.google.com/scholar?q=" + quote_plus(f'author:"{h["name"]}"')
+        h["case"] = cid_of.get((pm, h["name"]))
+    audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.exists() else {"rounds": []}
+
     tpl = (ROOT / "docs" / "index.html").read_text(encoding="utf-8")
-    data = json.dumps({"S": summary, "C": cases, "P": papers}, separators=(",", ":")).replace("</", "<\\/")
+    data = json.dumps({"S": summary, "C": cases, "P": papers, "H": hand, "A": audit}, separators=(",", ":")).replace("</", "<\\/")
     html = patch(tpl, data)
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(html, encoding="utf-8")
@@ -78,12 +89,23 @@ def patch(s, data):
          '.authors{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}\n'
          '.authors li{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:8px 12px;font-size:19px}\n'
          '.authors li.clk{cursor:pointer}.authors li.clk:hover{background:var(--hover)}\n'
+         '.hgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}\n'
+         '.hcard{all:unset;cursor:pointer;display:grid;gap:4px;background:var(--paper);border:1px solid var(--rule);border-left:6px solid var(--bad);border-radius:10px;padding:12px 16px}\n'
+         '.hcard:hover{background:var(--hover)}.hname{font:800 24px var(--serif);color:var(--ink)}.hsub{font-size:17px;color:var(--muted)}\n'
+         '.hline{font-size:18px;font-style:italic;color:var(--ink2)}.hamt{font:700 26px var(--mono);color:var(--bad)}.hamt small{font:400 16px var(--sans);color:var(--muted)}\n'
+         '.hok{font:600 14px var(--mono);color:var(--good);text-transform:uppercase;letter-spacing:.06em}\n'
+         '.ptab{width:100%;border-collapse:collapse;font-size:17px;margin-top:10px}.ptab th{text-align:left;font:600 14px var(--mono);text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--rule);padding:6px}\n'
+         '.ptab td:first-child{white-space:nowrap}.ptab td{border-bottom:1px solid var(--rule);padding:6px;vertical-align:top;color:var(--ink2)}.audit td{font-size:17px}\n'
          '.tag{font:600 13px var(--mono);text-transform:uppercase;letter-spacing:.06em;border-radius:99px;padding:3px 8px;text-align:center;color:#fff}\n'
          '/* modal */'),
     ]
     for a, b in rep:
         assert a in s, a[:50]
         s = s.replace(a, b)
+    s = s.replace('Authors are anonymised to specialty and US region; amounts are rounded to $1,000, and amounts over $100,000 appear only as bands.',
+                  'This internal version shows real names, exact amounts and a link to each public payment record.')
+    s = s.replace('<p class="kicker">One real case, anonymised</p>', '<p class="kicker">One real case</p>')
+    s = s.replace('<section>\n    <p class="kicker">Explore</p>', HAND_HTML + '\n  <section>\n    <p class="kicker">Explore</p>', 1)
     s = s.replace('<span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${famTxt(c,3)}',
                   '<span>${esc(c.name)} · ${esc(c.specialty)}, ${esc(c.city)}<small>${esc(c.journal)}, ${c.year} · ${famTxt(c,3)}')
     # data inline instead of fetch
@@ -95,10 +117,41 @@ def patch(s, data):
     return s
 
 
+HAND_HTML = '''<section>
+    <p class="kicker">Checked by hand</p>
+    <h2>Ten cases, checked line by line against the government record.</h2>
+    <p class="read"><b>How to read:</b> each card is one author. The quote is what the paper says about them; the amount is what companies reported paying them in the 36 months before the journal received the paper. Click a card for every dated payment record. <b>For a publisher</b>, this is the evidence an editor would see before sending a query.</p>
+    <div class="hgrid" id="handGrid"></div>
+    <h3 style="margin-top:26px;font-size:30px">How we tested the checker</h3>
+    <p class="read">We also checked 43 random red cases by hand, in three rounds. Each error we found was traced to its cause and fixed in the code before the next round.</p>
+    <table class="ptab audit"><thead><tr><th>Round</th><th>Checked</th><th>Held up</th><th>Errors found</th><th>Fix</th></tr></thead><tbody id="auditBody"></tbody></table>
+  </section>'''
+
+
 FULL_JS = r'''
 /* ---------- internal: named views ---------- */
+let HD=[],AU={rounds:[]};
+try{const d=JSON.parse(document.getElementById("ntd-data").textContent);HD=d.H||[];AU=d.A||{rounds:[]}}catch(e){}
+const usd=x=>"$"+Math.round(x).toLocaleString();
+function handView(h){
+  const rows=h.payments.map(p=>`<tr><td>${p.date}</td><td>${esc(p.company)}</td><td>${esc(p.type)}</td><td style="text-align:right;font-family:var(--mono)">${usd(p.usd)}</td><td style="font-family:var(--mono);color:var(--muted)">${esc(p.record)}</td></tr>`).join("");
+  return `<h3>${esc(h.name)}</h3><p class="sub">${esc(h.specialty||"")}, ${esc(h.city)}, ${esc(h.state)} · <i>${esc(h.title)}</i> (${esc(h.journal)}, ${h.date.slice(0,4)})</p>
+   <div class="links"><a class="proof" href="${h.proof}" target="_blank" rel="noopener">Proof: government payment record ↗</a><a href="https://doi.org/${h.doi}" target="_blank" rel="noopener">Read the paper ↗</a><a href="${h.scholar}" target="_blank" rel="noopener">Google Scholar ↗</a>${h.orcid?`<a href="https://orcid.org/${h.orcid}" target="_blank" rel="noopener">ORCID ↗</a>`:""}</div>
+   <div class="quote">“${esc(h.line)}”<br><small style="font-style:normal">What the paper's statement says about this author. Received by the journal ${h.received}; payments counted from ${h.window.replace("-"," to ")}.</small></div>
+   <p class="read"><b>${h.payments.length} payment records, ${usd(h.total)} in total</b>, of which ${usd(h.fees)} were fees (consulting, speaking, honoraria). Every row below is one record in the US government's Open Payments database.</p>
+   <div style="max-height:420px;overflow:auto;margin-top:8px"><table class="ptab"><thead><tr><th>Date</th><th>Company</th><th>Type</th><th>Amount</th><th>Record</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function drawHand(){
+  const el=document.getElementById("handGrid");if(!el)return;
+  el.innerHTML=HD.map((h,i)=>`<button class="hcard" data-i="${i}"><span class="hname">${esc(h.name)}</span><span class="hsub">${esc(h.specialty||"")}, ${esc(h.city)} · ${esc(h.journal)}, ${h.date.slice(0,4)}</span>
+     <span class="hline">“${esc(h.line)}”</span><span class="hamt">${usd(h.total)} <small>from ${esc(h.by_company.slice(0,2).map(x=>nice(x[0])).join(", "))}${h.by_company.length>2?" and others":""}</small></span><span class="hok">✓ Checked by hand</span></button>`).join("");
+  el.querySelectorAll(".hcard").forEach(b=>b.onclick=()=>openModal(handView(HD[+b.dataset.i])));
+  const au=document.getElementById("auditBody");
+  if(au)au.innerHTML=AU.rounds.map(r=>`<tr><td>${esc(r.name)}</td><td style="text-align:center">${r.checked}</td><td style="text-align:center" class="grn"><b>${r.held}</b></td><td>${r.errors.map(esc).join("<br>")}</td><td>${esc(r.fix)}</td></tr>`).join("");
+}
+setTimeout(drawHand,0);
 const TAGC={red:"--bad",amber:"--warn",green:"--good",unclear:"--none",not_checkable:"--none",outside:"--none",no_statement:"--none"};
-const TAGT={red:"Undeclared",amber:"No relevant",green:"Clean",unclear:"Unclear match",not_checkable:"Not checkable",outside:"Non-US",no_statement:"No statement"};
+const TAGT={red:"Undeclared",amber:"Limited",green:"Clean",unclear:"Unclear match",not_checkable:"Not checkable",outside:"Non-US",no_statement:"No statement"};
 const plink=x=>x.doi?`https://doi.org/${x.doi}`:"";
 function linksFor(c){return `<div class="links"><a class="proof" href="${c.proof}" target="_blank" rel="noopener">Proof: government payment record ↗</a><a href="${c.scholar}" target="_blank" rel="noopener">Google Scholar ↗</a>${c.orcid?`<a href="https://orcid.org/${c.orcid}" target="_blank" rel="noopener">ORCID ↗</a>`:""}<a href="${plink(c)}" target="_blank" rel="noopener">Read the paper ↗</a></div>`}
 caseView=function(c,back){

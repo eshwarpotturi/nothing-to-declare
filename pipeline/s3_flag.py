@@ -16,6 +16,9 @@ RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|r
 
 BLANKET = re.compile(r"(declare|report|have|has|disclose)[sd]?\s+(that\s+)?(there\s+(are|is)\s+)?(no|nothing)\b"
                      r"|no (known |potential |relevant )?(conflicts?|competing|financial)|none declared|nothing to (declare|disclose|report)", re.I)
+# statements that send the reader to a list kept elsewhere (supplement, website) cannot be checked from the text
+ELSEWHERE = re.compile(r"(disclosures?|conflicts?( of interest)?|interests?) (forms? )?(are|is|can be) (available|found|provided|listed)"
+                       r"|see (the )?(supporting|supplementa)|available (in|at) (the )?(supporting|supplementa|online|https?:)|https?://|www\.", re.I)
 MENTIONS = re.compile(r"consult|advis|speaker|honorar|grant|fees?\b|stock|employ|royalt|board|received|support(ed)? by|funding from|paid", re.I)
 
 
@@ -40,32 +43,43 @@ def significant(payments, pay):
 
 
 def llm_undeclared(c, coi, author, initials, companies):
-    """Ask the LLM which paying companies the statement does NOT cover for this author. Cached."""
-    key = hashlib.sha1(json.dumps([coi, author, initials, sorted(companies), c["llm"]["model"], "v2"]).encode()).hexdigest()
+    """Ask the LLM which paying companies the statement does NOT cover for this author. Cached.
+
+    The model first quotes the part of the statement about this author. A company whose group is named in that
+    quote is then always treated as declared, so a model slip can only clear a flag, never create one."""
+    key = hashlib.sha1(json.dumps([coi, author, initials, sorted(companies), c["llm"]["model"], "v3"]).encode()).hexdigest()
     path = CACHE / "llm" / f"{key}.json"
     if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    token = env_token(c["llm"]["token_env"])
-    fams = {co: family(co) for co in companies}
-    prompt = (f"Conflict-of-interest statement from a medical paper:\n\"\"\"{coi}\"\"\"\n\n"
-              f"Author: {author} (the statement may refer to them by surname or initials such as {initials}).\n"
-              f"Companies that reported paying this author, with their corporate group: {json.dumps(fams)}\n\n"
-              "For each paying company, decide whether the statement discloses ANY relationship between THIS author and "
-              "that company or any company in the same corporate group (parent, subsidiary, acquired brand, abbreviation). "
-              "Count as disclosed: being an employee, consultant, speaker, advisor, grantee, or stockholder of it, or of "
-              "'the sponsor' when the sponsor is that company. If the statement lists relationships under initials that "
-              "match this author, they belong to this author. If you cannot tell whom a relationship belongs to, treat it "
-              "as disclosed. Reply with JSON only: "
-              '{"undeclared": [paying companies not disclosed for this author], "author_referenced": true/false}')
-    r = requests.post(f"{c['llm']['base_url']}/chat/completions", timeout=120,
-                      headers={"Authorization": f"Bearer {token}"},
-                      json={"model": c["llm"]["model"], "temperature": 0, "response_format": {"type": "json_object"},
-                            "messages": [{"role": "user", "content": prompt}]})
-    r.raise_for_status()
-    ans = json.loads(r.json()["choices"][0]["message"]["content"])
-    ans["undeclared"] = [x for x in ans.get("undeclared", []) if x in companies]
-    path.parent.mkdir(exist_ok=True)
-    path.write_text(json.dumps(ans), encoding="utf-8")
+        ans = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        token = env_token(c["llm"]["token_env"])
+        fams = {co: family(co) for co in companies}
+        prompt = (f"Conflict-of-interest statement from a medical paper:\n\"\"\"{coi}\"\"\"\n\n"
+                  f"Author: {author} (the statement may refer to them by full name, surname or initials such as {initials}).\n"
+                  f"Companies that reported paying this author, with their corporate group: {json.dumps(fams)}\n\n"
+                  "Step 1: copy, word for word, every part of the statement that describes THIS author's own relationships "
+                  "(for example the sentence or list that starts with their name or initials). Do not include parts about "
+                  "other authors. If the statement says all authors have no conflicts, copy that sentence. If nothing refers "
+                  "to this author, return an empty string.\n"
+                  "Step 2: for each paying company, decide whether that part discloses ANY relationship with that company or "
+                  "any company in the same corporate group (parent, subsidiary, acquired brand, abbreviation such as BMS for "
+                  "E.R. Squibb, MSD for Merck Sharp & Dohme, EMD Serono or plain 'Merck' for Merck KGaA). Being an employee, "
+                  "consultant, speaker, advisor, grantee or stockholder all count as disclosed. If you cannot tell whom a "
+                  "relationship belongs to, treat it as disclosed.\n"
+                  'Reply with JSON only: {"author_segment": "...", "undeclared": [paying companies not disclosed for this author], '
+                  '"author_referenced": true/false}')
+        r = requests.post(f"{c['llm']['base_url']}/chat/completions", timeout=180,
+                          headers={"Authorization": f"Bearer {token}"},
+                          json={"model": c["llm"]["model"], "temperature": 0, "response_format": {"type": "json_object"},
+                                "messages": [{"role": "user", "content": prompt}]})
+        r.raise_for_status()
+        ans = json.loads(r.json()["choices"][0]["message"]["content"])
+        path.parent.mkdir(exist_ok=True)
+        path.write_text(json.dumps(ans), encoding="utf-8")
+    seg = ans.get("author_segment") or ""
+    canon = {co.strip().lower(): co for co in companies}  # the model may change the capitalisation of names
+    picked = [canon.get(str(x).strip().lower()) for x in ans.get("undeclared", [])]
+    ans["undeclared"] = [x for x in dict.fromkeys(picked) if x and not (seg and named_in(seg, x))]
     return ans
 
 
@@ -152,6 +166,9 @@ def main():
             if row["channel"] == "pending_llm":
                 row["channel"] = "unclear"; row["reason"] = "LLM check failed"
 
+    for row in rows:
+        if row["channel"] == "red" and ELSEWHERE.search(row["coi"]):
+            row["channel"] = "amber"; row["reason"] += " (statement points to disclosures kept elsewhere)"
     write_jsonl(RESULTS / "authors.jsonl", rows)
     red = [r for r in rows if r["channel"] == "red"]
     with open(RESULTS / "red_flags.csv", "w", newline="", encoding="utf-8") as f:

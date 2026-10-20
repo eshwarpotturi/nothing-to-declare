@@ -35,7 +35,7 @@ matching:
 llm:
   enabled: true
   base_url: "https://llmfoundry.straivedemo.com/openai/v1"
-  model: "gpt-4.1-mini"
+  model: "gpt-4.1"
   token_env: "LLMFOUNDRY_TOKEN"       # or put LLMFOUNDRY_TOKEN=... in private/.env
 
 publish:

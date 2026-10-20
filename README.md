@@ -11,10 +11,10 @@ The dashboard uses a customs-checkpoint metaphor. Each paper is a traveller with
 | | |
 |---|---|
 | Open-access papers with US authors, 40 clinical journals | 2,878 |
-| US authors matched and checked | 16,541 |
-| Authors with undeclared industry payments (red) | 1,814 |
-| Papers with at least one red author | 967 |
-| Hand check of 20 random red cases | about 9 in 10 correct |
+| US authors matched and checked | 15,652 |
+| Authors with undeclared industry payments (red) | 1,523 |
+| Papers with at least one red author | 835 (3 in 10) |
+| Hand checks of red cases | 43 checked; the last random check found 14 of 15 correct, and each error found was fixed in the code |
 
 A red channel is a question, not a finding of misconduct. Journal policies differ on what must be declared, some disclosures may reach the editor without being printed, and only US clinicians appear in the payment record.
 
@@ -43,6 +43,8 @@ python run.py --from 3   # re-flag only, e.g. after changing rules in config.yam
 Journals ask authors to declare relationships from the 36 months before they submit a paper (the ICMJE rule). So the check counts back 36 months from the date the journal received the paper. If the paper does not give that date, it uses the publication date instead.
 
 Open Payments reports money by calendar year, and the pipeline uses yearly totals, so it cannot split a year. It counts only the years that sit wholly inside the 36 months. For a paper received on 15 March 2024, the 36 months run from 15 March 2021 to 14 March 2024, so payments from 2022 and 2023 count. This misses some real payments in the part-years at each end, but every flag it raises is clearly inside the rule. Set `payments.year_rule: overlap` in `config.yaml` to count every year that touches the window instead. Set `payments.window_anchor: published` in `config.yaml` to count back from publication instead.
+
+`pipeline/handcheck.py` pulls every dated payment record for chosen cases, so a person can check them by hand.
 
 All settings (dates, look-back, thresholds, matching, model) live in `config.yaml`. Every web response is cached locally, so re-runs are fast and cost nothing extra. Logs show a timestamp and done/total progress.
 

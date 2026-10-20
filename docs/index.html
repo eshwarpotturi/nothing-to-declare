@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=1280">
 <title>Nothing to Declare</title>
-<meta name="description" content="One in three medical papers with US authors has an author who did not declare drug or device company money. A check of 2,878 papers against public payment records.">
+<meta name="description" content="3 in 10 medical papers with US authors have an author who did not declare drug or device company money. A check of 2,878 papers against public payment records.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -150,8 +150,8 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <button class="toggle" id="theme" aria-pressed="false">Dark mode</button></div>
 
   <section class="hero">
-    <h1>1 in 3 papers hides <span class="red">drug-company money</span>.</h1>
-    <p class="lede">Medical papers ask authors to declare money from drug and device companies. We checked 2,878 papers against the US government's public payment record. Half pass. A third do not.</p>
+    <h1 id="heroTitle">3 in 10 papers hide <span class="red">drug-company money</span>.</h1>
+    <p class="lede" id="heroLede">Medical papers ask authors to declare money from drug and device companies. We checked 2,878 papers against the US government's public payment record. More than half pass. 3 in 10 do not.</p>
     <div class="hero-grid">
       <div class="papers">
         <canvas id="grid" role="img" aria-label="Grid of 2,878 papers coloured by disclosure status. Click a square to open that paper."></canvas>
@@ -184,15 +184,15 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
     <p class="body" id="amountText"></p>
     <p class="read"><b>How to read:</b> each dot is one flagged author; further right means more undeclared money. <b>For a publisher</b>, everything right of the dashed line is a five-figure relationship readers never saw.</p>
     <div class="chart"><svg id="swarm" viewBox="0 0 1090 400" role="img" aria-label="Each flagged author as a dot on a dollar scale"></svg>
-      <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the 36 months before the paper was submitted (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts. Click a dot to open the case.</p></div>
+      <p class="cap">Each dot is one flagged author, placed by the undeclared amount in the 36 months before the paper was submitted (log scale; 1 US dollar ≈ ₹100). Red: undeclared. Amber: paper declared only "no relevant" conflicts, or pointed to a list kept elsewhere. Click a dot to open the case.</p></div>
   </section>
 
   <section>
     <p class="kicker">Where</p>
-    <h2>In every specialty most authors are clean, but the red share varies seven-fold.</h2>
+    <h2>In every specialty most authors are clean, but the red share varies eight-fold.</h2>
     <p class="read"><b>How to read:</b> each bar is one specialty's checked authors, red share on the left, green on the right. <b>For a publisher</b>, this says where to start: the top three specialties would catch the most gaps per paper checked.</p>
     <div class="chart"><svg id="fields" viewBox="0 0 1090 470" role="img" aria-label="Share of checked authors green, amber and red, by specialty"></svg>
-      <p class="cap">Share of checked US authors in each field. Green: declaration matches the record. Amber: declared only "no relevant" conflicts. Red: undeclared payments. Click a field for its cases.</p></div>
+      <p class="cap">Share of checked US authors in each field. Green: declaration matches the record. Amber: declared only "no relevant" conflicts, or pointed to a list kept elsewhere. Red: undeclared payments. Click a field for its cases.</p></div>
   </section>
 
   <section>
@@ -250,7 +250,7 @@ ul.mlist{list-style:none;margin:0;padding:0;border:1px solid var(--rule);border-
       <div><b>3 · Payments</b>Fees, grants, royalties, travel and meals that companies reported in the full calendar years inside the 36 months before the paper was submitted.</div>
       <div><b>4 · Verdict</b>Red when a paying company or its corporate group is missing from the declaration. An AI model reads partial declarations.</div>
     </div>
-    <p class="fine">A red flag is a question for an editor, not a finding of misconduct. Journal policies differ on what must be declared, and some disclosures reach the editor without being printed. Only US clinicians appear in the payment record. Authors are anonymised to specialty and US region; amounts are rounded to $1,000, and amounts over $100,000 appear only as bands. A hand check of 20 random red cases found about 9 in 10 correct.</p>
+    <p class="fine">A red flag is a question for an editor, not a finding of misconduct. Journal policies differ on what must be declared, and some disclosures reach the editor without being printed. Only US clinicians appear in the payment record. Authors are anonymised to specialty and US region; amounts are rounded to $1,000, and amounts over $100,000 appear only as bands. We checked 43 red cases by hand. The last random check found 14 of 15 correct, and every error we found was traced and fixed in the code.</p>
   </section>
 </div>
 <footer class="col">Data: Europe PMC (papers), CMS Open Payments 2020–2025 (payments).</footer>
@@ -339,7 +339,7 @@ function paperView(p){
   openModal(`<h3>${esc(p.f)} paper, ${p.y}</h3><p class="sub">${p.s==="green"?"Declaration matches the record":"Outside the payment record"}</p>${txt}`);
 }
 function hero(){
-  const ps=S.paper_status,c=S.channels,checked=c.red+c.amber+c.green,lab={red:"Undeclared payments",amber:'Declared only "no relevant" conflicts',green:"Declaration matches the record",grey:"No US author could be checked"},vr={red:"--bad",amber:"--warn",green:"--good",grey:"--none"};
+  const ps=S.paper_status,c=S.channels,checked=c.red+c.amber+c.green,lab={red:"Undeclared payments",amber:'Limited declaration ("no relevant" or "see elsewhere")',green:"Declaration matches the record",grey:"No US author could be checked"},vr={red:"--bad",amber:"--warn",green:"--good",grey:"--none"};
   $("gridLegend").innerHTML=`<span style="color:var(--muted)">Each square is one paper (${S.papers.toLocaleString()})</span>`+["red","amber","green","grey"].map(s=>`<span><i style="background:var(${vr[s]})"></i>${lab[s]} · <b class="num">${(ps[s]||0).toLocaleString()}</b></span>`).join("");
   const tiles=[
     {c:"--bad",big:pct(S.red_papers/S.papers),txt:`of papers have at least one author with undeclared payments (${S.red_papers.toLocaleString()} of ${S.papers.toLocaleString()})`,
@@ -445,7 +445,7 @@ function caseTip(c){return `<b>${esc(c.specialty)} · US ${esc(c.region)}</b>${e
 function wireTips(){
   $("swarm").addEventListener("mousemove",e=>{const id=e.target.dataset&&e.target.dataset.id;id?showTip(e,caseTip(byId[id])):hideTip()});$("swarm").addEventListener("mouseleave",hideTip);
   $("grid").addEventListener("mousemove",e=>{if(!gridLayout)return;const {sorted}=gridLayout,i=gridIndex(e),p=sorted[i];if(!p){hideTip();return}
-    const lab={red:"Undeclared payments",amber:'Declared only "no relevant" conflicts',green:"Declaration matches the record",grey:"No US author could be checked"}[p.s];
+    const lab={red:"Undeclared payments",amber:'Limited declaration ("no relevant" or "see elsewhere")',green:"Declaration matches the record",grey:"No US author could be checked"}[p.s];
     showTip(e,`<b>${esc(p.f)} paper, ${p.y}</b>${lab}<br>${p.n} US author${p.n===1?"":"s"} checked${p.c.length?` · ${p.c.length} flagged`:""}<small>Click to open</small>`)});
   $("grid").addEventListener("mouseleave",hideTip);
   document.querySelectorAll("svg title").forEach(t=>{const g=t.parentNode,txt=t.textContent;t.remove();g.addEventListener("mousemove",e=>showTip(e,`<b>${esc(txt.split(":")[0])}</b>${esc(txt.split(":").slice(1).join(":"))}<small>Click for the cases</small>`));g.addEventListener("mouseleave",hideTip)});
@@ -467,7 +467,16 @@ function explorer(){
   const fc={};C.forEach(c=>c.items.forEach(i=>fc[i.fam]=(fc[i.fam]||0)+1));Object.entries(fc).sort((a,b)=>b[1]-a[1]).slice(0,40).map(x=>x[0]).sort().forEach(f=>$("f-co").add(new Option(f,f)));
   ["f-field","f-co","f-ch","f-min","f-sort"].forEach(id=>$(id).addEventListener("change",()=>{xshown=30;xcur=null;xlist()}));xlist();
 }
-Promise.all(["summary","cases","papers"].map(n=>fetch(`data/${n}.json`).then(r=>r.json()))).then(([s,c,p])=>{S=s;C=c;P=p;C.forEach(x=>byId[x.id]=x);
+function heroText(S){
+  const n=S.papers,ps=S.paper_status||{},r=(ps.red||0)/n,g=(ps.green||0)/n;
+  const F=[[1,2],[2,5],[1,3],[3,10],[1,4],[1,5],[1,10]];
+  const [a,b]=F.reduce((best,f)=>Math.abs(f[0]/f[1]-r)<Math.abs(best[0]/best[1]-r)?f:best);
+  const t=document.getElementById("heroTitle"),l=document.getElementById("heroLede");
+  if(t)t.innerHTML=`${a} in ${b} papers ${a===1?"hides":"hide"} <span class="red">drug-company money</span>.`;
+  const pass=g>0.5?"More than half pass":g>0.45?"About half pass":`${Math.round(g*10)} in 10 pass`;
+  if(l)l.textContent=`Medical papers ask authors to declare money from drug and device companies. We checked ${n.toLocaleString()} papers against the US government's public payment record. ${pass}. ${a} in ${b} do not.`;
+}
+Promise.all(["summary","cases","papers"].map(n=>fetch(`data/${n}.json`).then(r=>r.json()))).then(([s,c,p])=>{S=s;C=c;P=p;C.forEach(x=>byId[x.id]=x);heroText(S);
   drawGrid();hero();declare();swarm();fields();companies();trend();explorer();wireTips();
   let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(drawGrid,150)});
 }).catch(()=>{$("stats").innerHTML='<p class="body">Could not load the results. Reload the page to try again.</p>'});
