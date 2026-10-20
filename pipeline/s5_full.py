@@ -68,9 +68,6 @@ def main():
 def patch(s, data):
     rep = [
         ('<title>Nothing to Declare</title>', '<title>Nothing to Declare (internal)</title>'),
-        # title and subtitle (Anand's feedback: two lines, UK-government plain style)
-        ('<h1>One in three medical papers has an author who didn\'t declare <span class="red">drug-company money</span>.</h1>',
-         '<h1>1 in 3 papers hides <span class="red">drug-company money</span>.</h1>'),
         # internal banner
         ('<div class="col">\n  <div class="topbar">',
          '<div class="internal">Internal. Contains real names. Not for public sharing.</div>\n<div class="col">\n  <div class="topbar">'),
@@ -87,9 +84,6 @@ def patch(s, data):
     for a, b in rep:
         assert a in s, a[:50]
         s = s.replace(a, b)
-    s = re.sub(r'<p class="lede">.*?</p>',
-               '<p class="lede">Medical papers ask authors to declare money from drug and device companies. '
-               'We checked 2,878 papers against the US government\'s public payment record. Half pass. A third do not.</p>', s, count=1, flags=re.S)
     s = s.replace('<span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${famTxt(c,3)}',
                   '<span>${esc(c.name)} · ${esc(c.specialty)}, ${esc(c.city)}<small>${esc(c.journal)}, ${c.year} · ${famTxt(c,3)}')
     # data inline instead of fetch
