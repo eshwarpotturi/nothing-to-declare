@@ -108,6 +108,11 @@ def patch(s, data):
     s = s.replace('<section>\n    <p class="kicker">Explore</p>', HAND_HTML + '\n  <section>\n    <p class="kicker">Explore</p>', 1)
     s = s.replace('<span>${esc(c.specialty)} · US ${esc(c.region)}<small>${esc(c.field)} paper, ${c.year} · ${famTxt(c,3)}',
                   '<span>${esc(c.name)} · ${esc(c.specialty)}, ${esc(c.city)}<small>${esc(c.journal)}, ${c.year} · ${famTxt(c,3)}')
+    # show names wherever a case is shown (case card, hover tip, explorer, red-channel title)
+    s = s.replace('<div>${esc(c.specialty)}, US ${esc(c.region)}</div><div>${esc(c.field)} paper, ${c.year}</div>',
+                  '<div>${c.name?`${esc(c.name)}, ${esc(c.city)}, ${esc(c.state)}`:`${esc(c.specialty)}, US ${esc(c.region)}`}</div><div>${c.journal?esc(c.journal):esc(c.field)+" paper"}, ${c.year}</div>')
+    s = s.replace('${esc(c.specialty)} · US ${esc(c.region)}', '${c.name?esc(c.name)+" · "+esc(c.specialty)+", "+esc(c.city):esc(c.specialty)+" · US "+esc(c.region)}')
+    s = s.replace('${esc(c.specialty)}, US ${esc(c.region)}</h3>', '${c.name?esc(c.name):esc(c.specialty)+", US "+esc(c.region)}</h3>')
     # data inline instead of fetch
     s = s.replace('Promise.all(["summary","cases","papers"].map(n=>fetch(`data/${n}.json`).then(r=>r.json())))',
                   'Promise.resolve((d=>[d.S,d.C,d.P])(JSON.parse(document.getElementById("ntd-data").textContent)))')
@@ -159,12 +164,14 @@ caseView=function(c,back){
   return `${back?`<button class="back" id="mback">← Back</button>`:""}<h3>${esc(c.name)}</h3>
    <p class="sub">${esc(c.specialty)}, ${esc(c.city)}, ${esc(c.state)} · <i>${esc(c.title)}</i> (${esc(c.journal)}, ${c.year})</p>
    ${linksFor(c)}
-   ${caseBlock({...c,specialty:c.name,region:c.city+", "+c.state},true)}
+   ${caseBlock(c,true)}
    <div class="quote">“${esc(c.statement)}”<br><small style="font-style:normal">The paper's conflict-of-interest statement, as published.</small></div>
    <div class="letter"><b>Draft query the editor could send:</b> Dear Dr ${esc(c.name.split(" ").slice(-1)[0])}, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the 36 months before you submitted your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
 };
 paperView=function(p){
-  const rows=p.a.map(a=>{const c=a.case?byId[a.case]:null;return `<li class="${c?"clk":""}" ${c?`data-id="${c.id}"`:""}><span class="tag" style="background:var(${TAGC[a.st]||"--none"})">${TAGT[a.st]||a.st}</span><span>${esc(a.name)}${a.orcid?` <a href="https://orcid.org/${a.orcid}" target="_blank" rel="noopener" style="font-size:15px">ORCID</a>`:""}</span><span class="amt" style="font-family:var(--mono)">${c?k(c.usd)+" undeclared":""}</span></li>`}).join("");
+  const RANK={red:0,amber:1,unclear:2,no_statement:3,not_checkable:4,outside:5,green:6};
+  const au=p.a.slice().sort((x,y)=>(RANK[x.st]??5)-(RANK[y.st]??5)||((y.case?byId[y.case].usd:0)-(x.case?byId[x.case].usd:0)));
+  const rows=au.map(a=>{const c=a.case?byId[a.case]:null;return `<li class="${c?"clk":""}" ${c?`data-id="${c.id}"`:""}><span class="tag" style="background:var(${TAGC[a.st]||"--none"})">${TAGT[a.st]||a.st}</span><span>${esc(a.name)}${a.orcid?` <a href="https://orcid.org/${a.orcid}" target="_blank" rel="noopener" style="font-size:15px">ORCID</a>`:""}</span><span class="amt" style="font-family:var(--mono)">${c?k(c.usd)+" undeclared":""}</span></li>`}).join("");
   const nf=p.a.filter(a=>a.case).length;
   const html=()=>`<h3 style="font-size:28px">${esc(p.t)}</h3><p class="sub">${esc(p.j)}, ${p.y}. ${p.a.length} authors; ${p.n} US authors checked${nf?`; <b class="red">${nf} with undeclared payments</b>`:""}.</p>
     <div class="links"><a href="https://doi.org/${p.doi}" target="_blank" rel="noopener">Read the paper ↗</a></div>
@@ -173,10 +180,10 @@ paperView=function(p){
   openModal(html());wire();
 };
 listView=function(title,sub,cases,stats){
-  const rows=cases.slice().sort((a,b)=>b.usd-a.usd).slice(0,200);
+  const rows=cases.slice().sort((a,b)=>(a.ch==="red"?0:1)-(b.ch==="red"?0:1)||b.usd-a.usd).slice(0,200);
   const html=()=>`<h3>${esc(title)}</h3><p class="sub">${sub}</p>${stats||""}
    <ul class="mlist">${rows.map(c=>`<li><button data-id="${c.id}"><i style="background:var(${c.ch==="amber"?"--warn":"--bad"})"></i><span>${esc(c.name)} · ${esc(c.specialty)}, ${esc(c.city)}<small>${esc(c.journal)}, ${c.year} · ${famTxt(c,3)}</small></span><span class="amt">${k(c.usd)}</span></button></li>`).join("")}</ul>
-   ${cases.length>200?`<p class="hint">Showing the 200 largest of ${cases.length.toLocaleString()}.</p>`:""}`;
+   ${cases.length>200?`<p class="hint">Showing 200 of ${cases.length.toLocaleString()}.</p>`:""}`;
   const wire=()=>$("mbody").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>{setModal(caseView(byId[b.dataset.id],true));$("mback").onclick=()=>{setModal(html());wire()}});
   openModal(html());wire();
 };

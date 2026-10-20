@@ -10,9 +10,10 @@ import requests
 from common import CACHE, DATA, RESULTS, cfg, env_token, log, pool, read_jsonl, write_jsonl
 from companies import author_refs, family, named_in
 from dates import anchor, program_years
-from s2_payments import norm_first
+from s2_payments import nature_name, norm_first
 
-RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|relevant to (the|this) (content|paper|work|study|article|manuscript|research)|not relevant|unrelated to (this|the)|outside (the )?submitted work", re.I)
+RELEVANT = re.compile(r"relevant (conflicts?|competing|financial|disclosures?)|relevant to (the|this) (content|paper|work|study|article|manuscript|research)|not relevant|unrelated to (this|the)|outside (the )?submitted work"
+                      r"|(no|any|not have)( known| potential| financial)? (conflicts?|competing (financial )?interests?)( of interest)?( to declare| to disclose)?( directly)? (related to|in|for|with respect to|regarding|relevant to) (this|the) (present |current |submitted )?(work|study|paper|article|manuscript|research|report|publication)", re.I)
 
 BLANKET = re.compile(r"(declare|report|have|has|disclose)[sd]?\s+(that\s+)?(there\s+(are|is)\s+)?(no|nothing)\b"
                      r"|no (known |potential |relevant )?(conflicts?|competing|financial)|none declared|nothing to (declare|disclose|report)", re.I)
@@ -88,6 +89,9 @@ def main():
     pay = c["payments"]
     papers = read_jsonl(DATA / "papers.jsonl")
     people = {(r["first"], r["last"], r["state"]): r for r in read_jsonl(DATA / "payments.jsonl")}
+    for r in people.values():
+        for x in r.get("payments", []):
+            x["type"] = nature_name(x["type"])
 
     # Disclosure window: the months before the anchor date (manuscript received, else publication).
     # Step 2 pulls Open Payments totals by program (calendar) year, not dated payments, so every program
@@ -166,6 +170,17 @@ def main():
             if row["channel"] == "pending_llm":
                 row["channel"] = "unclear"; row["reason"] = "LLM check failed"
 
+    # royalties: authors often disclose "royalties" or a patent without naming the licensee company
+    for row in rows:
+        if row["channel"] != "red" or not row.get("undeclared"):
+            continue
+        roy_only = [co for co in row["undeclared"] if all(t.startswith("Royalty") for t in row["paid"][co]["types"])]
+        refs = author_refs(*row["author"].rsplit(" ", 1))
+        if roy_only and refs.search(row["coi"]) and re.search(r"royalt|patent|inventor|licens", row["coi"], re.I):
+            row["undeclared"] = [co for co in row["undeclared"] if co not in roy_only]
+            if not row["undeclared"]:
+                row["undeclared"] = roy_only
+                row["channel"] = "amber"; row["reason"] += " (royalties or patents disclosed without naming the company)"
     for row in rows:
         if row["channel"] == "red" and ELSEWHERE.search(row["coi"]):
             row["channel"] = "amber"; row["reason"] += " (statement points to disclosures kept elsewhere)"

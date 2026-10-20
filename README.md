@@ -12,8 +12,8 @@ The dashboard uses a customs-checkpoint metaphor. Each paper is a traveller with
 |---|---|
 | Open-access papers with US authors, 40 clinical journals | 2,878 |
 | US authors matched and checked | 15,652 |
-| Authors with undeclared industry payments (red) | 1,523 |
-| Papers with at least one red author | 835 (3 in 10) |
+| Authors with undeclared industry payments (red) | 1,492 |
+| Papers with at least one red author | 814 (nearly 3 in 10) |
 | Hand checks of red cases | 43 checked; the last random check found 14 of 15 correct, and each error found was fixed in the code |
 
 A red channel is a question, not a finding of misconduct. Journal policies differ on what must be declared, some disclosures may reach the editor without being printed, and only US clinicians appear in the payment record.

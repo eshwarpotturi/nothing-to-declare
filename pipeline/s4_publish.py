@@ -127,6 +127,12 @@ def main():
                                "said_none": sum(1 for r in red if r["reason"] == "statement declares no conflicts"),
                                "relevant_only": sum(1 for r in rows if r["channel"] == "amber")}
     summary["by_year_mix"] = {y: {k2: v[k2] for k2 in ("green", "amber", "red")} for y, v in sorted(yr.items())}
+    # lead case on the dashboard: the first hand-checked case, if there is one (only its anonymous id is published)
+    hc_path = RESULTS / "handcheck.json"
+    if hc_path.exists():
+        keys = [h["key"] for h in json.loads(hc_path.read_text(encoding="utf-8"))]
+        ids = {f'{r["pmcid"]}|{r["author"]}': case_of[id(r)] for r in flagged}
+        summary["hero"] = next((ids[k] for k in keys if k in ids), None)
     (PUBLIC / "cases.json").write_text(json.dumps(cases, separators=(",", ":")), encoding="utf-8")
     (PUBLIC / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     log(f"public: {len(cases)} anonymised red cases, summary {dict(counts)}")

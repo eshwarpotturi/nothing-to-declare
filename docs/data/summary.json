@@ -2,30 +2,30 @@
  "papers": 2878,
  "authors": 20107,
  "channels": {
-  "green": 13871,
+  "green": 13867,
   "unclear": 889,
-  "red": 1523,
-  "amber": 258,
+  "red": 1492,
+  "amber": 293,
   "not_checkable": 3217,
   "no_statement": 349
  },
- "red_papers": 835,
+ "red_papers": 814,
  "period": "2023-10 to 2026-10",
  "by_field": {
   "Cardiology": {
-   "green": 2746,
+   "green": 2745,
    "unclear": 189,
-   "red": 340,
-   "amber": 60,
+   "red": 336,
+   "amber": 65,
    "not_checkable": 2743,
    "no_statement": 12
   },
   "Clinical pharmacology": {
    "not_checkable": 233,
    "green": 1674,
-   "red": 51,
+   "amber": 20,
+   "red": 37,
    "unclear": 78,
-   "amber": 6,
    "no_statement": 5
   },
   "Dermatology": {
@@ -37,10 +37,10 @@
   "Diabetes and obesity": {
    "green": 355,
    "not_checkable": 2,
-   "red": 21,
+   "red": 19,
+   "amber": 8,
    "no_statement": 4,
-   "unclear": 24,
-   "amber": 6
+   "unclear": 24
   },
   "Endocrinology": {
    "no_statement": 2,
@@ -52,11 +52,11 @@
   },
   "Gastroenterology": {
    "green": 604,
-   "red": 73,
+   "red": 74,
    "unclear": 49,
    "no_statement": 59,
    "not_checkable": 9,
-   "amber": 5
+   "amber": 4
   },
   "Head and neck surgery": {
    "no_statement": 22,
@@ -80,25 +80,25 @@
   },
   "Neurology": {
    "green": 2454,
-   "red": 318,
+   "red": 313,
    "unclear": 139,
    "not_checkable": 155,
-   "amber": 59,
+   "amber": 64,
    "no_statement": 112
   },
   "Oncology": {
-   "green": 3328,
+   "green": 3325,
    "unclear": 213,
-   "red": 317,
-   "amber": 97,
+   "red": 313,
+   "amber": 104,
    "not_checkable": 35,
    "no_statement": 46
   },
   "Otolaryngology": {
    "green": 1635,
    "unclear": 134,
-   "red": 184,
-   "amber": 7,
+   "red": 181,
+   "amber": 10,
    "not_checkable": 24,
    "no_statement": 70
   },
@@ -108,131 +108,131 @@
   }
  },
  "by_year": {
-  "2023": 35,
-  "2024": 316,
-  "2025": 657,
-  "2026": 515
+  "2023": 30,
+  "2024": 297,
+  "2025": 651,
+  "2026": 514
  },
  "top_companies": [
   [
    "MEDTRONIC, INC.",
-   141
+   139
   ],
   [
    "ASTRAZENECA PHARMACEUTICALS LP",
-   106
+   119
   ],
   [
    "MERCK SHARP & DOHME LLC",
-   101
-  ],
-  [
-   "ABBOTT LABORATORIES",
-   88
+   98
   ],
   [
    "E.R. SQUIBB & SONS, L.L.C.",
    88
   ],
   [
+   "ABBOTT LABORATORIES",
+   87
+  ],
+  [
    "AMGEN INC.",
-   76
+   74
   ],
   [
    "BOSTON SCIENTIFIC CORPORATION",
-   73
-  ],
-  [
-   "GENZYME CORPORATION",
-   73
-  ],
-  [
-   "PFIZER INC.",
    71
   ],
   [
-   "NOVARTIS PHARMACEUTICALS CORPORATION",
-   65
+   "PFIZER INC.",
+   70
   ],
   [
-   "INTUITIVE SURGICAL, INC.",
-   56
+   "GENZYME CORPORATION",
+   70
+  ],
+  [
+   "NOVARTIS PHARMACEUTICALS CORPORATION",
+   62
   ],
   [
    "ABBVIE INC.",
    55
+  ],
+  [
+   "INTUITIVE SURGICAL, INC.",
+   54
   ]
  ],
- "undeclared_usd_total": 53763086,
+ "undeclared_usd_total": 50026069,
  "usd_to_inr": 100,
  "paper_status": {
-  "green": 1588,
-  "red": 835,
-  "amber": 119,
+  "green": 1585,
+  "red": 814,
+  "amber": 143,
   "grey": 336
  },
  "by_year_rate": {
   "2023": {
    "checked": 566,
-   "red": 35
+   "red": 30
   },
   "2024": {
    "checked": 3741,
-   "red": 316
+   "red": 297
   },
   "2025": {
    "checked": 6546,
-   "red": 657
+   "red": 651
   },
   "2026": {
    "checked": 4799,
-   "red": 515
+   "red": 514
   }
  },
- "median_usd": 7850,
+ "median_usd": 7540,
  "amount_bins": [
   [
    "Under $2k",
-   299
+   300
   ],
   [
    "$2k\u20135k",
-   319
+   312
   ],
   [
    "$5k\u201310k",
-   227
+   223
   ],
   [
    "$10k\u201350k",
-   444
+   427
   ],
   [
    "$50k\u2013100k",
-   108
+   106
   ],
   [
    "$100k+",
-   126
+   124
   ]
  ],
- "fees_share": 0.867,
- "blanket_red": 456,
+ "fees_share": 0.876,
+ "blanket_red": 445,
  "companies": [
   {
    "name": "AstraZeneca",
-   "declared": 267,
-   "undeclared": 186
+   "declared": 268,
+   "undeclared": 204
+  },
+  {
+   "name": "Bristol Myers Squibb",
+   "declared": 252,
+   "undeclared": 107
   },
   {
    "name": "Johnson & Johnson",
    "declared": 203,
-   "undeclared": 151
-  },
-  {
-   "name": "Bristol Myers Squibb",
-   "declared": 248,
-   "undeclared": 104
+   "undeclared": 153
   },
   {
    "name": "Pfizer",
@@ -256,8 +256,8 @@
   },
   {
    "name": "Sanofi",
-   "declared": 136,
-   "undeclared": 118
+   "declared": 135,
+   "undeclared": 119
   },
   {
    "name": "Merck",
@@ -272,7 +272,7 @@
   {
    "name": "Novartis",
    "declared": 152,
-   "undeclared": 88
+   "undeclared": 87
   },
   {
    "name": "Eli Lilly",
@@ -282,40 +282,41 @@
   {
    "name": "Abbott",
    "declared": 94,
-   "undeclared": 97
+   "undeclared": 99
   },
   {
    "name": "Gilead",
-   "declared": 85,
-   "undeclared": 56
+   "declared": 86,
+   "undeclared": 55
   }
  ],
  "paid_authors": {
-  "declared_all": 468,
-  "missed_some": 1067,
-  "said_none": 456,
-  "relevant_only": 258
+  "declared_all": 467,
+  "missed_some": 1047,
+  "said_none": 445,
+  "relevant_only": 293
  },
  "by_year_mix": {
   "2023": {
    "green": 528,
-   "amber": 3,
-   "red": 35
+   "amber": 8,
+   "red": 30
   },
   "2024": {
-   "green": 3330,
-   "amber": 95,
-   "red": 316
+   "green": 3331,
+   "amber": 113,
+   "red": 297
   },
   "2025": {
-   "green": 5794,
-   "amber": 95,
-   "red": 657
+   "green": 5791,
+   "amber": 104,
+   "red": 651
   },
   "2026": {
-   "green": 4219,
-   "amber": 65,
-   "red": 515
+   "green": 4217,
+   "amber": 68,
+   "red": 514
   }
- }
+ },
+ "hero": "C1159"
 }

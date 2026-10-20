@@ -25,6 +25,8 @@ payments:
     - Grant
   exclude_types:                 # not personal relationships worth a COI line in this demo
     - Acquisitions
+    - Charitable Contribution
+    - Long-term medical supply or device loan
   min_total_usd: 1000            # otherwise flag when the undeclared total reaches this
 
 matching:

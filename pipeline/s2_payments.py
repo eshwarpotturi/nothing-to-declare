@@ -7,7 +7,20 @@ from common import DATA, cfg, get, log, pool, read_jsonl, write_jsonl
 OP = "https://openpaymentsdata.cms.gov/api/1"
 # Nature-of-payment codes in the grouped datasets, mapped by matching against the detailed 2025 records.
 NATURE = {"1": "Consulting Fee", "2": "Compensation for services other than consulting (speaker/faculty)", "3": "Honoraria",
-          "6": "Food and Beverage", "7": "Travel and Lodging", "8": "Education", "14": "Grant", "19": "Acquisitions"}
+          "6": "Food and Beverage", "7": "Travel and Lodging", "8": "Education", "14": "Grant", "19": "Acquisitions",
+          # mapped on 20 Oct 2026 by matching grouped totals against detailed records
+          "4": "Gift", "5": "Entertainment", "9": "Charitable Contribution", "10": "Royalty or License",
+          "11": "Ownership or investment interest", "12": "Compensation for serving as faculty or as a speaker (non-accredited education)",
+          "13": "Compensation for serving as faculty or as a speaker (accredited education)",
+          "16": "Compensation for serving as faculty or as a speaker (medical education)", "17": "Debt forgiveness",
+          "18": "Long-term medical supply or device loan"}
+
+
+def nature_name(t):
+    """Older step-2 files stored unmapped codes as 'Other (code N)'; translate them."""
+    if t and t.startswith("Other (code "):
+        return NATURE.get(t[12:-1], t)
+    return t
 
 
 def datasets():
