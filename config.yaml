@@ -13,7 +13,8 @@ payments:
   # Program years are resolved automatically from the Open Payments catalogue.
   # Look-back follows the ICMJE rule: relationships in the 36 months before submission.
   window_anchor: received        # received = manuscript received date (falls back to publication if missing); published = publication date
-  lookback_months: 36            # months before the anchor date. Open Payments is by calendar year, so every year that overlaps counts
+  lookback_months: 36            # months before the anchor date
+  year_rule: inside              # Open Payments is by calendar year. inside = count only years wholly inside the 36 months (every flag defensible); overlap = count any year that touches them (catches more, can over-count)
   meal_only_ignore_below: 1000   # meals/travel only, under this total (USD), are not flagged
   flag_any_amount_for:           # these payment types are flagged at any amount
     - Consulting Fee

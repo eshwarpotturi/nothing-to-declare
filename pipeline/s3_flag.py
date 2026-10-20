@@ -77,14 +77,15 @@ def main():
 
     # Disclosure window: the months before the anchor date (manuscript received, else publication).
     # Step 2 pulls Open Payments totals by program (calendar) year, not dated payments, so every program
-    # year that overlaps the window counts in full.
+    # year is counted by pay["year_rule"]: "inside" (only years wholly inside the window) or "overlap".
     mode = pay.get("window_anchor", "received")
     months = pay.get("lookback_months") or 12 * pay.get("lookback_years", 3)
+    rule = pay.get("year_rule", "inside")
     rows, llm_jobs, basis_n = [], [], defaultdict(int)
     for p in papers:
         anchor_date, basis = anchor(p, mode)
         basis_n[basis] += 1
-        window = program_years(anchor_date, months)
+        window = program_years(anchor_date, months, rule)
         for a in p["authors"]:
             k = (norm_first(a["given"]), a["surname"].strip().upper(), a["state"])
             r = people.get(k)

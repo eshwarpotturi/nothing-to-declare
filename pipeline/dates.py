@@ -4,7 +4,7 @@ The ICMJE form asks about relationships in the 36 months before submission. Pape
 months before they are published, so the window is anchored on the received date when the paper gives one.
 """
 import re
-from datetime import date
+from datetime import date, timedelta
 
 MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
 # Text form some full-text XML uses instead of a <date>: "Received 2023 Sep 5; Accepted 2024 May 17; ..."
@@ -81,12 +81,22 @@ def months_before(d, months):
             continue
 
 
-def program_years(anchor_date, months=36):
-    """Open Payments program years (calendar years) that overlap the `months` before anchor_date.
+def program_years(anchor_date, months=36, rule="inside"):
+    """Open Payments program years (calendar years) to check for a paper.
 
-    The pipeline pulls yearly totals per company and payment type, not individual payment dates, so a year
-    counts in full if any part of it falls in the window. Example: received 2024-03-15 -> window
-    2021-03-15 to 2024-03-14 -> years 2021, 2022, 2023, 2024."""
+    The window is the `months` before anchor_date. The pipeline pulls yearly totals per company and payment
+    type, not individual payment dates, so a part-year cannot be split. Two rules:
+      inside  (default): only years that sit wholly inside the window. Every payment counted is certainly
+                         within the 36 months, so every flag is safe to defend. Some real payments in the
+                         part-years at either end are missed.
+      overlap: every year that touches the window counts in full. Catches more, but can count payments
+               outside the 36 months.
+    Example: received 2024-03-15 -> window 2021-03-15 to 2024-03-14 -> inside: 2022, 2023;
+    overlap: 2021, 2022, 2023, 2024."""
     start = months_before(anchor_date, months)
-    last = anchor_date.year if anchor_date > date(anchor_date.year, 1, 1) else anchor_date.year - 1
-    return set(range(start.year, last + 1))
+    end = anchor_date - timedelta(days=1)  # the window ends the day before the anchor date
+    if rule == "overlap":
+        return set(range(start.year, end.year + 1))
+    if rule != "inside":
+        raise ValueError(f"unknown year rule: {rule}")
+    return {y for y in range(start.year, end.year + 1) if date(y, 1, 1) >= start and date(y, 12, 31) <= end}
