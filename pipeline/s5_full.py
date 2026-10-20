@@ -114,7 +114,7 @@ caseView=function(c,back){
    ${linksFor(c)}
    ${caseBlock({...c,specialty:c.name,region:c.city+", "+c.state},true)}
    <div class="quote">“${esc(c.statement)}”<br><small style="font-style:normal">The paper's conflict-of-interest statement, as published.</small></div>
-   <div class="letter"><b>Draft query the editor could send:</b> Dear Dr ${esc(c.name.split(" ").slice(-1)[0])}, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the three years before your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
+   <div class="letter"><b>Draft query the editor could send:</b> Dear Dr ${esc(c.name.split(" ").slice(-1)[0])}, as part of a routine disclosure check we noticed that public US records list payments to you from ${cos} in the 36 months before you submitted your article, which do not appear in its conflict-of-interest statement. Could you confirm whether these should be added? We are happy to publish an updated statement.</div>`;
 };
 paperView=function(p){
   const rows=p.a.map(a=>{const c=a.case?byId[a.case]:null;return `<li class="${c?"clk":""}" ${c?`data-id="${c.id}"`:""}><span class="tag" style="background:var(${TAGC[a.st]||"--none"})">${TAGT[a.st]||a.st}</span><span>${esc(a.name)}${a.orcid?` <a href="https://orcid.org/${a.orcid}" target="_blank" rel="noopener" style="font-size:15px">ORCID</a>`:""}</span><span class="amt" style="font-family:var(--mono)">${c?k(c.usd)+" undeclared":""}</span></li>`}).join("");
